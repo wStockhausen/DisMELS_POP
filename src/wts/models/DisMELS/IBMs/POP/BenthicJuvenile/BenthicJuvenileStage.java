@@ -18,6 +18,7 @@ import wts.models.DisMELS.IBMFunctions.Miscellaneous.ConstantFunction;
 import wts.models.DisMELS.IBMFunctions.Mortality.ConstantMortalityRate;
 import wts.models.DisMELS.IBMFunctions.Mortality.TemperatureDependentMortalityRate_Houde1989;
 import wts.models.DisMELS.IBMs.POP.Adult.AdultStage;
+import wts.models.DisMELS.IBMs.POP.NewAttributes;
 import wts.models.DisMELS.framework.*;
 import wts.models.DisMELS.framework.IBMFunctions.IBMFunctionInterface;
 import wts.models.utilities.DateTimeFunctions;
@@ -91,6 +92,18 @@ public class BenthicJuvenileStage extends AbstractLHS {
     protected double temperature = 0;
     /** in situ salinity */
     protected double salinity = 0;
+    /** in situ bathymetry */
+    protected double bathymetry = 0;
+    /** in situ romsvar1 */
+    protected double romsvar1 = 0;
+    /** in situ romsvar2 */
+    protected double romsvar2 = 0;
+    /** in situ romsvar3 */
+    protected double romsvar3 = 0;
+    /** in situ romsvar4 */
+    protected double romsvar4 = 0;
+    /** in situ romsvar5 */
+    protected double romsvar5 = 0;
     
             //other fields
     /** number of individuals transitioning to next stage */
@@ -845,10 +858,16 @@ public class BenthicJuvenileStage extends AbstractLHS {
     @Override
     protected void updateAttributes() {
         super.updateAttributes();
-        atts.setValue(BenthicJuvenileStageAttributes.PROP_size,size);
-        atts.setValue(BenthicJuvenileStageAttributes.PROP_weight,weight);
-        atts.setValue(BenthicJuvenileStageAttributes.PROP_salinity,salinity);
-        atts.setValue(BenthicJuvenileStageAttributes.PROP_temperature,temperature);
+        atts.setValue(NewAttributes.PROP_size,size);
+        atts.setValue(NewAttributes.PROP_weight,weight);
+        atts.setValue(NewAttributes.PROP_salinity,salinity);
+        atts.setValue(NewAttributes.PROP_temperature,temperature);
+        atts.setValue(NewAttributes.PROP_bathymetry,bathymetry);
+        atts.setValue(NewAttributes.PROP_romsvar1,romsvar1);
+        atts.setValue(NewAttributes.PROP_romsvar2,romsvar2);
+        atts.setValue(NewAttributes.PROP_romsvar3,romsvar3);
+        atts.setValue(NewAttributes.PROP_romsvar4,romsvar4);
+        atts.setValue(NewAttributes.PROP_romsvar5,romsvar5);
     }
 
     /**
@@ -857,10 +876,16 @@ public class BenthicJuvenileStage extends AbstractLHS {
     @Override
     protected void updateVariables() {
         super.updateVariables();
-        size        = atts.getValue(BenthicJuvenileStageAttributes.PROP_size,size);
-        weight      = atts.getValue(BenthicJuvenileStageAttributes.PROP_weight,weight);
-        salinity    = atts.getValue(BenthicJuvenileStageAttributes.PROP_salinity,salinity);
-        temperature = atts.getValue(BenthicJuvenileStageAttributes.PROP_temperature,temperature);
+        size        = atts.getValue(NewAttributes.PROP_size,size);
+        weight      = atts.getValue(NewAttributes.PROP_weight,weight);
+        salinity    = atts.getValue(NewAttributes.PROP_salinity,salinity);
+        temperature = atts.getValue(NewAttributes.PROP_temperature,temperature);
+        bathymetry    = atts.getValue(NewAttributes.PROP_bathymetry,bathymetry);
+        romsvar1    = atts.getValue(NewAttributes.PROP_romsvar1,romsvar1);
+        romsvar2    = atts.getValue(NewAttributes.PROP_romsvar2,romsvar2);
+        romsvar3    = atts.getValue(NewAttributes.PROP_romsvar3,romsvar3);
+        romsvar4    = atts.getValue(NewAttributes.PROP_romsvar4,romsvar4);
+        romsvar5    = atts.getValue(NewAttributes.PROP_romsvar5,romsvar5);
     }
 
 }

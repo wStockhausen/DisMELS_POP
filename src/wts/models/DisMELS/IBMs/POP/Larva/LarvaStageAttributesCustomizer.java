@@ -6,6 +6,7 @@
 
 package wts.models.DisMELS.IBMs.POP.Larva;
 
+import wts.models.DisMELS.IBMs.POP.NewAttributes;
 import wts.models.DisMELS.framework.*;
 import wts.models.DisMELS.gui.AttributesCustomizer;
 
@@ -100,12 +101,12 @@ public class LarvaStageAttributesCustomizer extends AttributesCustomizer {
 
     private void jtfSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtfSizeActionPerformed
         Double n = new Double(jtfSize.getText());
-        attributes.setValue(attributes.PROP_size,n);
+        attributes.setValue(NewAttributes.PROP_size,n);
     }//GEN-LAST:event_jtfSizeActionPerformed
 
     private void jtfWeightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtfWeightActionPerformed
         Double n = new Double(jtfWeight.getText());
-        attributes.setValue(attributes.PROP_weight,n);
+        attributes.setValue(NewAttributes.PROP_weight,n);
     }//GEN-LAST:event_jtfWeightActionPerformed
 
     @Override
@@ -126,8 +127,8 @@ public class LarvaStageAttributesCustomizer extends AttributesCustomizer {
             attributes = (LarvaStageAttributes) newAtts;
             czrStandardAttributes.setObject(attributes);
             Double d = null;
-            jtfSize.setText(attributes.getValue(attributes.PROP_size,d).toString());
-            jtfWeight.setText(attributes.getValue(attributes.PROP_weight,d).toString());
+            jtfSize.setText(attributes.getValue(NewAttributes.PROP_size,d).toString());
+            jtfWeight.setText(attributes.getValue(NewAttributes.PROP_weight,d).toString());
         }
     }
     

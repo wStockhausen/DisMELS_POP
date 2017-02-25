@@ -15,36 +15,21 @@ import org.openide.util.lookup.ServiceProvider;
 import wts.models.DisMELS.framework.AbstractLHSAttributes2;
 import wts.models.DisMELS.framework.IBMAttributes.IBMAttribute;
 import wts.models.DisMELS.framework.IBMAttributes.IBMAttributeDouble;
+import wts.models.DisMELS.IBMs.POP.NewAttributes;
 
 /**
- * DisMELS class representing attributes for arrowtooth flounder adults.
+ * DisMELS class representing attributes for POP adults.
  * 
  * @author William Stockhausen
  */
 @ServiceProvider(service=wts.models.DisMELS.framework.LifeStageAttributesInterface.class)
 public class AdultStageAttributes extends AbstractLHSAttributes2 {
     
-    /** Number of attributes defined by this class (including typeName) */
-    public static final int numNewAttributes = 5;
-    
-    public static final String PROP_size        = "size (cm)";
-    public static final String PROP_weight      = "weight (kg)";
-    public static final String PROP_gonadStage  = "gonad stage";
-    public static final String PROP_temperature = "temperature deg C";
-    public static final String PROP_salinity    = "salinity";
-    public static final String PROP_bathymetry  = "bathymetry";
-    public static final String PROP_romsvar1    = "romsvar1";
-    public static final String PROP_romsvar2    = "romsvar2";
-    public static final String PROP_romsvar3    = "romsvar3";
-    public static final String PROP_romsvar4    = "romsvar4";
-    public static final String PROP_romsvar5    = "romsvar5";
-    
-    protected static final Set<String> newKeys = new LinkedHashSet<>((int)(2*numNewAttributes));
-    protected static final Set<String> allKeys = new LinkedHashSet<>((int)(2*(numAttributes+numNewAttributes)));
-    protected static final Map<String,IBMAttribute> mapAllAttributes = new HashMap<>((int)(2*(numAttributes+numNewAttributes)));
-    protected static final String[] aKeys      = new String[numAttributes+numNewAttributes-1];//does not include typeName
-    protected static final Class[]  classes    = new Class[numAttributes+numNewAttributes];
-    protected static final String[] shortNames = new String[numAttributes+numNewAttributes];
+    protected static final Set<String> allKeys = new LinkedHashSet<>((int)(2*(numAttributes+NewAttributes.numNewAttributes)));
+    protected static final Map<String,IBMAttribute> mapAllAttributes = new HashMap<>((int)(2*(numAttributes+NewAttributes.numNewAttributes)));
+    protected static final String[] aKeys      = new String[numAttributes+NewAttributes.numNewAttributes-1];//does not include typeName
+    protected static final Class[]  classes    = new Class[numAttributes+NewAttributes.numNewAttributes];
+    protected static final String[] shortNames = new String[numAttributes+NewAttributes.numNewAttributes];
    
     private static final Logger logger = Logger.getLogger(AdultStageAttributes.class.getName());
     
@@ -92,15 +77,15 @@ public class AdultStageAttributes extends AbstractLHSAttributes2 {
     }
     
     private void finishInstantiation(){
+        Set<String> newKeys = NewAttributes.getNewKeys();
         if (newKeys.isEmpty()){
             //set static field information
             mapAllAttributes.putAll(AbstractLHSAttributes2.mapAttributes);//add from superclass
-            String key;
-            key = PROP_size;       newKeys.add(key); mapAllAttributes.put(key,new IBMAttributeDouble(key,"size"));
-            key = PROP_weight;     newKeys.add(key); mapAllAttributes.put(key,new IBMAttributeDouble(key,"weight"));
-            key = PROP_gonadStage; newKeys.add(key); mapAllAttributes.put(key,new IBMAttributeDouble(key,"gonadStage"));
-            key = PROP_temperature;newKeys.add(key); mapAllAttributes.put(key,new IBMAttributeDouble(key,"temperature"));
-            key = PROP_salinity;   newKeys.add(key); mapAllAttributes.put(key,new IBMAttributeDouble(key,"salinity"));
+            Iterator<String> itNewKeys = newKeys.iterator();
+            while (itNewKeys.hasNext()) {
+                String key = itNewKeys.next();
+                mapAllAttributes.put(key,new IBMAttributeDouble(key,key));
+            }
             allKeys.addAll(AbstractLHSAttributes2.keys);//add from superclass
             allKeys.addAll(newKeys);//add from this class
             Iterator<String> it = allKeys.iterator();
@@ -108,14 +93,7 @@ public class AdultStageAttributes extends AbstractLHSAttributes2 {
             while (it.hasNext()) aKeys[j++] = it.next();
         }
         //set instance information
-        Map<String,Object> tmpMapValues = new HashMap<>((int)(2*(numNewAttributes+numAttributes)));
-        tmpMapValues.putAll(mapValues);//copy from super
-        tmpMapValues.put(PROP_size,       new Double(0));
-        tmpMapValues.put(PROP_weight,     new Double(0));
-        tmpMapValues.put(PROP_gonadStage, new Double(0));
-        tmpMapValues.put(PROP_temperature,new Double(-1));
-        tmpMapValues.put(PROP_salinity,   new Double(-1));
-        mapValues = tmpMapValues;//assign to super
+        mapValues.putAll(NewAttributes.getNewMapValues());
     }
 
     /**
@@ -126,7 +104,7 @@ public class AdultStageAttributes extends AbstractLHSAttributes2 {
     @Override
     public ArrayList getArrayList() {
         ArrayList a = super.getArrayList();
-        for (String key: newKeys) a.add(getValue(key));
+        for (String key: NewAttributes.getNewKeys()) a.add(getValue(key));
         return a;
     }
 
@@ -137,7 +115,7 @@ public class AdultStageAttributes extends AbstractLHSAttributes2 {
      */
     @Override
     public Object[] getAttributes() {
-        Object[] atts = new Object[numNewAttributes+AbstractLHSAttributes2.numAttributes-1];
+        Object[] atts = new Object[NewAttributes.numNewAttributes+AbstractLHSAttributes2.numAttributes-1];
         int j = 0;
         Iterator<String> it = allKeys.iterator();
         it.next();//skip PROP_typeName
@@ -153,7 +131,7 @@ public class AdultStageAttributes extends AbstractLHSAttributes2 {
     @Override
     public String getCSV() {
         String str = super.getCSV();
-        Iterator<String> it = newKeys.iterator();
+        Iterator<String> it = NewAttributes.getNewKeys().iterator();
         while (it.hasNext()) str = str+cc+getValueAsString(it.next());
         return str;
     }
@@ -242,7 +220,7 @@ public class AdultStageAttributes extends AbstractLHSAttributes2 {
         //set the values of the new attributes
         int j = AbstractLHSAttributes2.numAttributes;
         try {
-            for (String key: newKeys) setValueFromString(key,strv[j++]);
+            for (String key: NewAttributes.getNewKeys()) setValueFromString(key,strv[j++]);
         } catch (java.lang.IndexOutOfBoundsException ex) {
             //@TODO: should throw an exception here that identifies the problem
             String[] aKeys = new String[AdultStageAttributes.allKeys.size()];
