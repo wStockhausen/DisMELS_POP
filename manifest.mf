@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: wts.models.DisMELS.IBMs.POP
+OpenIDE-Module-Localizing-Bundle: wts/models/DisMELS/IBMs/POP/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+
