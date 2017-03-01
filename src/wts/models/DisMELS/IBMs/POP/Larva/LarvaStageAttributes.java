@@ -217,6 +217,9 @@ public class LarvaStageAttributes extends AbstractLHSAttributes2 {
      */
     @Override
     public void setValues(final String[] strv) {
+//        String strp = "";
+//        for (int i=1;i<strv.length;i++) strp = strp+strv[i]+", ";
+//        logger.info("Setting value for \n\t"+strp);
         super.setValues(strv);//set the standard attribute values
         //set the values of the new attributes
         int j = AbstractLHSAttributes2.numAttributes;
@@ -268,6 +271,7 @@ public class LarvaStageAttributes extends AbstractLHSAttributes2 {
     
     @Override
     public String getValueAsString(String key){
+//        logger.info(key);
         Object val = getValue(key);
         IBMAttribute att = mapAllAttributes.get(key);
         att.setValue(val);
@@ -277,6 +281,7 @@ public class LarvaStageAttributes extends AbstractLHSAttributes2 {
     
     @Override
     public void setValueFromString(String key, String value) throws NumberFormatException {
+//        logger.info(key+": "+value);
         if (!key.equals(PROP_typeName)){
             IBMAttribute att = mapAllAttributes.get(key);
             att.parseValue(value);

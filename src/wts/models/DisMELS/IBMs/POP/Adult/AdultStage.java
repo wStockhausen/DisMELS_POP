@@ -822,6 +822,12 @@ public class AdultStage extends AbstractLHS {
     private void interpolateEnvVars(double[] pos) {
         temperature = i3d.interpolateTemperature(pos);
         salinity    = i3d.interpolateSalinity(pos);
+        bathymetry = i3d.interpolateBathymetricDepth(pos);
+        romsvar1 = i3d.interpolateValue(pos, NewAttributes.PROP_romsvar1);
+        romsvar2 = i3d.interpolateValue(pos, NewAttributes.PROP_romsvar2);
+        romsvar3 = i3d.interpolateValue(pos, NewAttributes.PROP_romsvar3);
+        romsvar4 = i3d.interpolateValue(pos, NewAttributes.PROP_romsvar4);
+        romsvar5 = i3d.interpolateValue(pos, NewAttributes.PROP_romsvar5);
     }
 
     @Override
