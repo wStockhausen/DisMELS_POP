@@ -79,7 +79,7 @@ public class LarvaStageAttributes extends AbstractLHSAttributes2 {
     
     private void finishInstantiation(){
         Set<String> newKeys = NewAttributes.getNewKeys();
-        if (newKeys.isEmpty()){
+        if (mapAllAttributes.isEmpty()){
             //set static field information
             mapAllAttributes.putAll(AbstractLHSAttributes2.mapAttributes);//add from superclass
             Iterator<String> itNewKeys = newKeys.iterator();
