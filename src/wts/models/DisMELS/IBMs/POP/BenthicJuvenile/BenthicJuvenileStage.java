@@ -613,9 +613,8 @@ public class BenthicJuvenileStage extends AbstractLHS {
         if (i3d.isAtGridEdge(pos,tolGridEdge)){
             alive=false;
             active=false;
-        }
-        if (debugOps) {
-            logger.info(toString());
+            gridCellID=i3d.getGridCellID(pos, tolGridEdge);
+            logger.info("Indiv "+id+" exited grid at ["+pos[0]+","+pos[1]+"]: "+gridCellID);
         }
         updateAttributes(); //update the attributes object w/ nmodified values
     }
@@ -669,7 +668,7 @@ public class BenthicJuvenileStage extends AbstractLHS {
                 double r = Math.sqrt(horizRWP/Math.abs(dt));
                 uv[0] = (s+r)*rng.computeNormalVariate(); //stochastic swimming rate
                 uv[1] = (s+r)*rng.computeNormalVariate(); //stochastic swimming rate
-                if (debugOps) System.out.print("uv: "+r+"; "+uv[0]+", "+uv[1]+"\n");
+                if (debugOps) logger.info("id: "+id+"; r, uv: "+r+", {"+uv[0]+", "+uv[1]+"}\n");
             }
         }
         
