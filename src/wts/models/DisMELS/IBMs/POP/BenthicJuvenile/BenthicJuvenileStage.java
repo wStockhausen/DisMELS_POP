@@ -1,8 +1,5 @@
 /*
  * BenthicJuvenileStage.java
- *
- * Created on Feb. 24, 2017.
- *
  */
 
 package wts.models.DisMELS.IBMs.POP.BenthicJuvenile;
@@ -26,8 +23,6 @@ import wts.roms.model.LagrangianParticle;
 
 /**
  * DisMELS stage representing benthic juveniles.
- * 
- * @author William Stockhausen
  */
 @ServiceProvider(service=LifeStageInterface.class)
 public class BenthicJuvenileStage extends AbstractLHS {
@@ -448,18 +443,18 @@ public class BenthicJuvenileStage extends AbstractLHS {
     public List<LifeStageInterface> getMetamorphosedIndividuals(double dt) {
         double dtp = 0.25*(dt/DAY_SECS);//use 1/4 timestep (converted from sec to d)
         output.clear();
-        LifeStageInterface nLHS;
+        List<LifeStageInterface> nLHSs;
         if (((ageInStage+dtp)>=minStageDuration)&&(size>=minSize)) {
             if ((numTrans>0)||!isSuperIndividual){
-                nLHS = createNextLHS();
-                if (nLHS!=null) output.add(nLHS);
+                nLHSs = createMetamorphosedIndividuals();
+                if (nLHSs!=null) output.addAll(nLHSs);
             }
         }
         return output;
     }
 
-    private LifeStageInterface createNextLHS() {
-        LifeStageInterface nLHS = null;
+    private List<LifeStageInterface> createMetamorphosedIndividuals() {
+        List<LifeStageInterface> nLHSs = null;
         try {
             //create LHS with "next" stage
             if (isSuperIndividual) {
@@ -473,7 +468,7 @@ public class BenthicJuvenileStage extends AbstractLHS {
                  *          5) set number in new LHS to numTrans for current LHS
                  *          6) reset numTrans in current LHS
                  */
-                nLHS = LHS_Factory.createNextLHSFromSuperIndividual(typeName,this,numTrans);
+                nLHSs = LHS_Factory.createNextLHSsFromSuperIndividual(typeName,this,numTrans);
                 numTrans = 0.0;//reset numTrans to zero
             } else {
                 /** 
@@ -487,14 +482,14 @@ public class BenthicJuvenileStage extends AbstractLHS {
                  *          4) copy current LHS origID to new LHS origID
                  *          5) kill current LHS
                  */
-                nLHS = LHS_Factory.createNextLHSFromIndividual(typeName,this);
+                nLHSs = LHS_Factory.createNextLHSsFromIndividual(typeName,this);
                 alive  = false; //allow only 1 transition, so kill this stage
                 active = false; //set stage inactive, also
             }
         } catch (IllegalAccessException | InstantiationException ex) {
             ex.printStackTrace();
         }
-        return nLHS;
+        return nLHSs;
     }
 
     /**
@@ -658,7 +653,7 @@ public class BenthicJuvenileStage extends AbstractLHS {
         * (if lat*declination>0, it's summer in the hemisphere, hence daytime). 
         * Alternatively, if the solar zenith angle > 90.833 deg, then it is night.
         */
-        double[] ss = DateTimeFunctions.computeSunriseSunset(lon,lat,globalInfo.getCalendar().getYearDay());
+        double[] ss = DateTimeFunctions.computeSunriseSunset(lon,lat,GlobalInfo.getInstance().getCalendar().getYearDay());
         
         //calculate horizontal movement
         double[] uv = {0.0,0.0};

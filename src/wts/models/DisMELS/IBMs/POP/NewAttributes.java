@@ -16,8 +16,9 @@ import java.util.Set;
  */
 public class NewAttributes {
     /** Number of non-standard attributes defined by this class */
-    public static final int numNewAttributes = 10;
+    public static final int numNewAttributes = 11;
     
+    public static final String PROP_attached    = "attached";
     public static final String PROP_size        = "size (cm)";
     public static final String PROP_weight      = "weight (kg)";
     public static final String PROP_temperature = "temperature deg C";
@@ -41,6 +42,7 @@ public class NewAttributes {
         if (newKeys.isEmpty()){
             //set static field information
             String key;
+            key = NewAttributes.PROP_attached;   newKeys.add(key); 
             key = NewAttributes.PROP_size;       newKeys.add(key); 
             key = NewAttributes.PROP_weight;     newKeys.add(key); 
             key = NewAttributes.PROP_temperature;newKeys.add(key); 
@@ -57,6 +59,7 @@ public class NewAttributes {
     
     public static final Map<String,Object> getNewMapValues(){
         if (newMapValues.isEmpty()){
+            newMapValues.put(NewAttributes.PROP_attached,   new Boolean(false));
             newMapValues.put(NewAttributes.PROP_size,       new Double(0));
             newMapValues.put(NewAttributes.PROP_weight,     new Double(0));
             newMapValues.put(NewAttributes.PROP_temperature,new Double(-1));

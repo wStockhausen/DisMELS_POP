@@ -1,10 +1,5 @@
 /*
- * SimplePelagicLHSAttributes
- *
- * Created on December 23, 2012
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * LarvaStageAttributes.java
  */
 
 package wts.models.DisMELS.IBMs.POP.Larva;
@@ -13,9 +8,9 @@ import java.util.*;
 import java.util.logging.Logger;
 import org.openide.util.lookup.ServiceProvider;
 import wts.models.DisMELS.IBMs.POP.NewAttributes;
-import wts.models.DisMELS.framework.AbstractLHSAttributes2;
-import static wts.models.DisMELS.framework.AbstractLHSAttributes2.numAttributes;
+import wts.models.DisMELS.framework.AbstractLHSAttributes;
 import wts.models.DisMELS.framework.IBMAttributes.IBMAttribute;
+import wts.models.DisMELS.framework.IBMAttributes.IBMAttributeBoolean;
 import wts.models.DisMELS.framework.IBMAttributes.IBMAttributeDouble;
 
 /**
@@ -24,7 +19,7 @@ import wts.models.DisMELS.framework.IBMAttributes.IBMAttributeDouble;
  * @author William Stockhausen
  */
 @ServiceProvider(service=wts.models.DisMELS.framework.LifeStageAttributesInterface.class)
-public class LarvaStageAttributes extends AbstractLHSAttributes2 {
+public class LarvaStageAttributes extends AbstractLHSAttributes {
     
     protected static final Set<String> allKeys = new LinkedHashSet<>((int)(2*(numAttributes+NewAttributes.numNewAttributes)));
     protected static final Map<String,IBMAttribute> mapAllAttributes = new HashMap<>((int)(2*(numAttributes+NewAttributes.numNewAttributes)));
@@ -81,13 +76,15 @@ public class LarvaStageAttributes extends AbstractLHSAttributes2 {
         Set<String> newKeys = NewAttributes.getNewKeys();
         if (mapAllAttributes.isEmpty()){
             //set static field information
-            mapAllAttributes.putAll(AbstractLHSAttributes2.mapAttributes);//add from superclass
+            mapAllAttributes.putAll(AbstractLHSAttributes.mapAttributes);//add from superclass
             Iterator<String> itNewKeys = newKeys.iterator();
+            String key = itNewKeys.next();
+            mapAllAttributes.put(key,new IBMAttributeBoolean(key,key));
             while (itNewKeys.hasNext()) {
-                String key = itNewKeys.next();
+                key = itNewKeys.next();
                 mapAllAttributes.put(key,new IBMAttributeDouble(key,key));
             }
-            allKeys.addAll(AbstractLHSAttributes2.keys);//add from superclass
+            allKeys.addAll(AbstractLHSAttributes.keys);//add from superclass
             allKeys.addAll(newKeys);//add from this class
             Iterator<String> it = allKeys.iterator();
             int j = 0; it.next();//skip typeName
@@ -116,7 +113,7 @@ public class LarvaStageAttributes extends AbstractLHSAttributes2 {
      */
     @Override
     public Object[] getAttributes() {
-        Object[] atts = new Object[NewAttributes.numNewAttributes+AbstractLHSAttributes2.numAttributes-1];
+        Object[] atts = new Object[NewAttributes.numNewAttributes+AbstractLHSAttributes.numAttributes-1];
         int j = 0;
         Iterator<String> it = allKeys.iterator();
         it.next();//skip PROP_typeName
@@ -222,7 +219,7 @@ public class LarvaStageAttributes extends AbstractLHSAttributes2 {
 //        logger.info("Setting value for \n\t"+strp);
         super.setValues(strv);//set the standard attribute values
         //set the values of the new attributes
-        int j = AbstractLHSAttributes2.numAttributes;
+        int j = AbstractLHSAttributes.numAttributes;
         try {
             for (String key: NewAttributes.getNewKeys()) setValueFromString(key,strv[j++]);
         } catch (java.lang.IndexOutOfBoundsException ex) {

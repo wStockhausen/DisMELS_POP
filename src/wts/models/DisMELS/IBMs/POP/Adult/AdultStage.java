@@ -1,8 +1,5 @@
 /*
  * AdultStage.java
- *
- * Created on Feb. 24, 2017.
- *
  */
 
 package wts.models.DisMELS.IBMs.POP.Adult;
@@ -24,8 +21,6 @@ import wts.roms.model.LagrangianParticle;
 
 /**
  * DisMELS class representing POP adults.
- * 
- * @author William Stockhausen
  */
 @ServiceProvider(service=LifeStageInterface.class)
 public class AdultStage extends AbstractLHS {
@@ -320,7 +315,7 @@ public class AdultStage extends AbstractLHS {
         atts.setValue(LifeStageAttributesInterface.PROP_ageInStage, 0.0);//reset age in stage
         atts.setValue(LifeStageAttributesInterface.PROP_active,true);    //set active to true
         atts.setValue(LifeStageAttributesInterface.PROP_alive,true);     //set alive to true
-        atts.setValue(LifeStageAttributesInterface.PROP_attached,true);  //set attached to true
+        atts.setValue(NewAttributes.PROP_attached,true);  //set attached to true
         id = atts.getID(); //reset id for current LHS to one from old LHS
 
         //copy LagrangianParticle information
@@ -368,7 +363,7 @@ public class AdultStage extends AbstractLHS {
         atts.setValue(LifeStageAttributesInterface.PROP_ageInStage, 0.0); //reset age in stage
         atts.setValue(LifeStageAttributesInterface.PROP_active,true);     //set active to true
         atts.setValue(LifeStageAttributesInterface.PROP_alive,true);      //set alive to true
-        atts.setValue(LifeStageAttributesInterface.PROP_attached,true);   //set attached to true
+        atts.setValue(NewAttributes.PROP_attached,true);   //set attached to true
             
         //copy LagrangianParticle information
         this.setLagrangianParticle(oldLHS.getLagrangianParticle());
@@ -469,16 +464,16 @@ public class AdultStage extends AbstractLHS {
     public List<LifeStageInterface> getMetamorphosedIndividuals(double dt) {
         double dtp = 0.25*(dt/DAY_SECS);//use 1/4 timestep (converted from sec to d)
         output.clear();
-        LifeStageInterface nLHS;
+        List<LifeStageInterface> nLHSs;
         if ((ageInStage+dtp>=minStageDuration)&&(size>=minSizeAtTrans)) {
-            nLHS = createMetamorphosedIndividual();
-            if (nLHS!=null) output.add(nLHS);
+            nLHSs = createMetamorphosedIndividuals();
+            if (nLHSs!=null) output.addAll(nLHSs);
         }
         return output;
     }
 
-    private LifeStageInterface createMetamorphosedIndividual() {
-        LifeStageInterface nLHS = null;
+    private List<LifeStageInterface> createMetamorphosedIndividuals() {
+        List<LifeStageInterface> nLHSs = null;
         try {
             //create LHS with "output" stage
             if (isSuperIndividual) {
@@ -492,7 +487,7 @@ public class AdultStage extends AbstractLHS {
                  *          5) set number in new LHS to numTrans for current LHS
                  *          6) reset numTrans in current LHS
                  */
-                nLHS = LHS_Factory.createNextLHSFromSuperIndividual(typeName,this,numTrans);
+                nLHSs = LHS_Factory.createNextLHSsFromSuperIndividual(typeName,this,numTrans);
                 numTrans = 0.0;//reset numTrans to zero
             } else {
                 /** 
@@ -506,14 +501,14 @@ public class AdultStage extends AbstractLHS {
                  *          4) copy current LHS origID to new LHS origID
                  *          5) kill current LHS
                  */
-                nLHS = LHS_Factory.createNextLHSFromIndividual(typeName,this);
+                nLHSs = LHS_Factory.createNextLHSsFromIndividual(typeName,this);
                 alive  = false; //allow only 1 transition, so kill this stage
                 active = false; //set stage inactive, also
             }
         } catch (IllegalAccessException | InstantiationException ex) {
             ex.printStackTrace();
         }
-        return nLHS;
+        return nLHSs;
     }
 
     @Override
@@ -560,10 +555,10 @@ public class AdultStage extends AbstractLHS {
                     newAtts.setValue(LifeStageAttributesInterface.PROP_track,      atts.getValue(LifeStageAttributesInterface.PROP_track));
                     newAtts.setValue(LifeStageAttributesInterface.PROP_active,     true);
                     newAtts.setValue(LifeStageAttributesInterface.PROP_alive,      true);
-                    newAtts.setValue(LifeStageAttributesInterface.PROP_attached,   true);
                     newAtts.setValue(LifeStageAttributesInterface.PROP_age,        0.0);
                     newAtts.setValue(LifeStageAttributesInterface.PROP_ageInStage, 0.0);
                     newAtts.setValue(LifeStageAttributesInterface.PROP_number,     1.0);//TODO:change this to fecundity/numSpawnPerIndiv
+                    newAtts.setValue(NewAttributes.PROP_attached,   true);
                     //copy LagrangianParticle information
                     nLHS.setLagrangianParticle(lp);
                     //start track at last position of oldLHS track
@@ -602,7 +597,7 @@ public class AdultStage extends AbstractLHS {
      */
     private void initializeTimedependentVariables() {
         //temporarily set calendar time to variable time
-        CalendarIF cal = globalInfo.getCalendar();
+        CalendarIF cal = GlobalInfo.getInstance().getCalendar();
         long modTime = cal.getTimeOffset();
         cal.setTimeOffset((long) time);
         dayOfYear = cal.getYearDay();
@@ -713,7 +708,7 @@ public class AdultStage extends AbstractLHS {
     @Override
     public void step(double dt) throws ArrayIndexOutOfBoundsException {
         //determine daytime/nighttime for vertical migration & calc indiv. W
-        dayOfYear = globalInfo.getCalendar().getYearDay();
+        dayOfYear = GlobalInfo.getInstance().getCalendar().getYearDay();
 //        isDaytime = DateTimeFunctions.isDaylight(lon,lat,dayOfYear);
         isSpawningSeason = DateTimeFunctions.isBetweenDOY(dayOfYear,firstDayOfSpawning,firstDayOfSpawning+lengthOfSpawningSeason);
         if (isSpawningSeason) {

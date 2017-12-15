@@ -36,7 +36,7 @@ public class AdultStageAttributesCustomizer extends AttributesCustomizer {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        czrStandardAttributes = new wts.models.DisMELS.gui.AbstractLHSAttributes2Customizer();
+        czrStandardAttributes = new wts.models.DisMELS.gui.AbstractLHSAttributesCustomizer();
         jPanel2 = new javax.swing.JPanel();
         jtfSize = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
@@ -148,7 +148,7 @@ public class AdultStageAttributesCustomizer extends AttributesCustomizer {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private wts.models.DisMELS.gui.AbstractLHSAttributes2Customizer czrStandardAttributes;
+    private wts.models.DisMELS.gui.AbstractLHSAttributesCustomizer czrStandardAttributes;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
