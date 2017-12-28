@@ -15,6 +15,7 @@ import wts.models.DisMELS.IBMFunctions.Growth.LinearGrowthFunction;
 import wts.models.DisMELS.IBMFunctions.Miscellaneous.ConstantFunction;
 import wts.models.DisMELS.IBMFunctions.Mortality.ConstantMortalityRate;
 import wts.models.DisMELS.IBMFunctions.Mortality.TemperatureDependentMortalityRate_Houde1989;
+import wts.models.DisMELS.IBMs.POP.Adult.InitialOGVFunction;
 import wts.models.DisMELS.IBMs.POP.NewAttributes;
 import wts.models.DisMELS.IBMs.POP.Settler.SettlerStage;
 import wts.models.DisMELS.framework.*;
@@ -76,6 +77,8 @@ public class LarvaStage extends AbstractLHS {
     protected boolean randomizeTransitions;
     /** stage transition rate */
     protected double stageTransRate;
+    /** flag to recalculate initial OGV*/
+    protected boolean recalcIOGV;
     
         //fields that reflect (new) attribute values
     /** size (mm) */
@@ -98,6 +101,10 @@ public class LarvaStage extends AbstractLHS {
     protected double romsvar4 = 0;
     /** in situ romsvar5 */
     protected double romsvar5 = 0;
+    /** maternal age */
+    protected double matAge;
+    /** oil globule volume */
+    protected double ogv;
     
             //other fields
     /** number of individuals transitioning to next stage */
@@ -105,6 +112,8 @@ public class LarvaStage extends AbstractLHS {
     /** total depth (m) at individual's position */
     private double totalDepth;
     
+    /** IBM function selected for initial oil globule volume */
+    private IBMFunctionInterface fcnIOGV = null; 
     /** IBM function selected for development */
     private IBMFunctionInterface fcnGrowth = null; 
     /** IBM function selected for mortality */
@@ -120,7 +129,7 @@ public class LarvaStage extends AbstractLHS {
     private static final Logger logger = Logger.getLogger(LarvaStage.class.getName());
     
     /**
-     * Creates a new instance of GenericLHS.  
+     * Creates a new instance of LarvaStage.  
      *  This constructor should be used ONLY to obtain
      *  the class names of the associated classes.
      * DO NOT DELETE THIS CONSTRUCTOR!!
@@ -132,7 +141,7 @@ public class LarvaStage extends AbstractLHS {
     }
     
     /**
-     * Creates a new instance of SimplePelagicLHS with the given typeName.
+     * Creates a new instance of LarvaStage with the given typeName.
      * A new id number is calculated in the superclass and assigned to
      * the new instance's id, parentID, and origID. 
      * 
@@ -211,8 +220,8 @@ public class LarvaStage extends AbstractLHS {
             if (newID==-1) {
                 lhs.atts.setValue(LifeStageAttributesInterface.PROP_origID,newID);
             }
+            lhs.initialize();//initialize instance variables
         }
-        lhs.initialize();//initialize instance variables
         return lhs;
     }
 
@@ -241,6 +250,7 @@ public class LarvaStage extends AbstractLHS {
      */
     @Override
     public void setAttributes(String[] strv) {
+        if (debug) logger.info("/nsetting attributes from String[] strv for id "+id);
         long aid;
         atts.setValues(strv);
         aid = atts.getValue(LifeStageAttributesInterface.PROP_id, id);
@@ -275,10 +285,12 @@ public class LarvaStage extends AbstractLHS {
      */
     @Override
     public void setAttributes(LifeStageAttributesInterface newAtts) {
+        if (debug) logger.info("/nsetting attributes from newAtts for old id "+id);
         //copy attributes, regardless of life stage associated w/ newAtts
         for (String key: newAtts.getKeys()) atts.setValue(key,newAtts.getValue(key));
         //fill in missing attributes depending on class of newAtts
         id = atts.getValue(LifeStageAttributesInterface.PROP_id, id);
+        if (debug) logger.info("new id = "+id);
         updateVariables();
     }
     
@@ -288,6 +300,7 @@ public class LarvaStage extends AbstractLHS {
      */
     @Override
     public void setInfoFromIndividual(LifeStageInterface oldLHS){
+        if (debug) logger.info("/nsetting info from individual with id "+oldLHS.getID()+"for current id "+id);
         /** 
          * Since this is a single individual making a transition, we need to:
          *  1) copy the attributes from the old LHS (id's should remain as for old LHS)
@@ -389,6 +402,7 @@ public class LarvaStage extends AbstractLHS {
      * Sets the IBM functions from the parameters object
      */
     private void setIBMFunctions(){
+        fcnIOGV    = params.getSelectedIBMFunctionForCategory(LarvaStageParameters.FCAT_OGV);
         fcnGrowth  = params.getSelectedIBMFunctionForCategory(LarvaStageParameters.FCAT_Growth);
         fcnMort    = params.getSelectedIBMFunctionForCategory(LarvaStageParameters.FCAT_Mortality);
         fcnVM      = params.getSelectedIBMFunctionForCategory(LarvaStageParameters.FCAT_VerticalMovement);
@@ -414,7 +428,9 @@ public class LarvaStage extends AbstractLHS {
         minSize = 
                 params.getValue(LarvaStageParameters.PARAM_minSize,minSize);
         randomizeTransitions = 
-                params.getValue(LarvaStageParameters.PARAM_randomizeTransitions,true);
+                params.getValue(LarvaStageParameters.PARAM_randomizeTransitions,randomizeTransitions);
+        recalcIOGV = 
+                params.getValue(LarvaStageParameters.PARAM_recalcOGV,recalcIOGV);
     }
     
     /**
@@ -505,7 +521,7 @@ public class LarvaStage extends AbstractLHS {
      * and finally calls updatePosition(), updateEnvVars(), and updateAttributes().
      */
     public void initialize() {
-//        atts.setValue(SimplePelagicLHSAttributes.PARAM_id,id);//TODO: should do this beforehand!!
+        if (debug) logger.info("\n---------------Initializing LarvaStage "+id+"------------");        
         updateVariables();//set instance variables to attribute values
         int hType,vType;
         hType=vType=-1;
@@ -518,8 +534,20 @@ public class LarvaStage extends AbstractLHS {
         zPos       = atts.getValue(LifeStageAttributesInterface.PROP_vertPos,zPos);
         time       = startTime;
         numTrans   = 0.0; //set numTrans to zero
+        if (recalcIOGV&&(ageInStage==0.0)){
+            //recalculate initial oil globule volume size based on maternal effects
+            if (fcnIOGV instanceof InitialOGVFunction){
+                double weekOfYear = (1.0*GlobalInfo.getInstance().getCalendar().getDayOfYear())/7.0;
+                ogv = (Double) fcnIOGV.calculate(new double[]{matAge,weekOfYear});
+                atts.setValue(LarvaStageAttributes.PROP_OGV, ogv);
+                if (debug) {
+                    logger.info("---Recalculated initial OGV----");
+                    logger.info("matAge = "+matAge+", week = "+weekOfYear+", iOGV = "+ogv);
+                }
+            }
+        }
         if (debug) {
-            logger.info("\n---------------Setting initial position------------");
+            logger.info("---Setting initial position------------");
             logger.info(hType+cc+vType+cc+startTime+cc+xPos+cc+yPos+cc+zPos);
         }
         if (i3d!=null) {
@@ -568,7 +596,7 @@ public class LarvaStage extends AbstractLHS {
                 logger.info("pos = ["+lon+", "+lat+"]");
                 logger.info("total depth = "+totalDepth);
                 logger.info("depth = "+depth);
-                logger.info("-------Finished setting initial position------------");
+                logger.info("---Finished setting initial position------------");
             }
             interpolateEnvVars(pos);
             updateAttributes(); 
@@ -700,6 +728,7 @@ public class LarvaStage extends AbstractLHS {
         age        = age+dt/DAY_SECS;
         ageInStage = ageInStage+dt/DAY_SECS;
         if (ageInStage>maxStageDuration) {
+            logger.info("--Killing LarvaStage individual"+id+"because "+ageInStage+">"+maxStageDuration);
             alive = false;
             active = false;
         }
@@ -865,7 +894,7 @@ public class LarvaStage extends AbstractLHS {
     }
     
     /**
-     * Updates attribute values defined for this abstract class. 
+     * Updates attribute values defined for this class. 
      */
     @Override
     protected void updateAttributes() {
@@ -880,6 +909,8 @@ public class LarvaStage extends AbstractLHS {
         atts.setValue(NewAttributes.PROP_romsvar3,romsvar3);
         atts.setValue(NewAttributes.PROP_romsvar4,romsvar4);
         atts.setValue(NewAttributes.PROP_romsvar5,romsvar5);
+        atts.setValue(LarvaStageAttributes.PROP_MaternalAge, matAge);
+        atts.setValue(LarvaStageAttributes.PROP_OGV, ogv);
     }
 
     /**
@@ -898,6 +929,8 @@ public class LarvaStage extends AbstractLHS {
         romsvar3    = atts.getValue(NewAttributes.PROP_romsvar3,romsvar3);
         romsvar4    = atts.getValue(NewAttributes.PROP_romsvar4,romsvar4);
         romsvar5    = atts.getValue(NewAttributes.PROP_romsvar5,romsvar5);
+        matAge      = atts.getValue(LarvaStageAttributes.PROP_MaternalAge, matAge);
+        ogv         = atts.getValue(LarvaStageAttributes.PROP_OGV, ogv);
     }
 
 }

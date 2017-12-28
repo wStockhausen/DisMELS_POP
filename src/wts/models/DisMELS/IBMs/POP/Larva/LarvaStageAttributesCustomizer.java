@@ -1,7 +1,5 @@
 /*
  * LarvaStageAttributesCustomizer.java
- *
- * Created on January 12, 2006, 4:20 PM
  */
 
 package wts.models.DisMELS.IBMs.POP.Larva;
@@ -11,7 +9,7 @@ import wts.models.DisMELS.framework.*;
 import wts.models.DisMELS.gui.AttributesCustomizer;
 
 /**
- * @author William Stockhausen
+ * Customizer for the POP LarvaStageAttributes class with maternal effects.
  */
 public class LarvaStageAttributesCustomizer extends AttributesCustomizer {
 
@@ -39,6 +37,8 @@ public class LarvaStageAttributesCustomizer extends AttributesCustomizer {
         jLabel1 = new javax.swing.JLabel();
         jtfWeight = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
+        jtfMatAge = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -70,6 +70,16 @@ public class LarvaStageAttributesCustomizer extends AttributesCustomizer {
         jLabel2.setText("Weight (g)");
         jLabel2.setToolTipText("");
 
+        jtfMatAge.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jtfMatAge.setText("0");
+        jtfMatAge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jtfMatAgeActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("Maternal age (years)");
+
         org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -77,11 +87,17 @@ public class LarvaStageAttributesCustomizer extends AttributesCustomizer {
             .add(jPanel2Layout.createSequentialGroup()
                 .add(jtfSize, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 123, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE))
+                .add(jLabel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE))
             .add(jPanel2Layout.createSequentialGroup()
-                .add(jtfWeight, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 123, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jtfMatAge)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jtfWeight, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE))
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(jLabel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
+                        .add(0, 0, 0))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -93,7 +109,11 @@ public class LarvaStageAttributesCustomizer extends AttributesCustomizer {
                 .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jtfWeight, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jLabel2))
-                .add(67, 67, 67))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jtfMatAge, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel3))
+                .addContainerGap())
         );
 
         add(jPanel2, java.awt.BorderLayout.CENTER);
@@ -108,6 +128,11 @@ public class LarvaStageAttributesCustomizer extends AttributesCustomizer {
         Double n = new Double(jtfWeight.getText());
         attributes.setValue(NewAttributes.PROP_weight,n);
     }//GEN-LAST:event_jtfWeightActionPerformed
+
+    private void jtfMatAgeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtfMatAgeActionPerformed
+        Double n = new Double(jtfMatAge.getText());
+        attributes.setValue(LarvaStageAttributes.PROP_MaternalAge,n);
+    }//GEN-LAST:event_jtfMatAgeActionPerformed
 
     @Override
     public void setObject(Object bean) {
@@ -129,6 +154,7 @@ public class LarvaStageAttributesCustomizer extends AttributesCustomizer {
             Double d = null;
             jtfSize.setText(attributes.getValue(NewAttributes.PROP_size,d).toString());
             jtfWeight.setText(attributes.getValue(NewAttributes.PROP_weight,d).toString());
+            jtfMatAge.setText(attributes.getValue(LarvaStageAttributes.PROP_MaternalAge,d).toString());
         }
     }
     
@@ -148,8 +174,10 @@ public class LarvaStageAttributesCustomizer extends AttributesCustomizer {
     private wts.models.DisMELS.gui.AbstractLHSAttributesCustomizer czrStandardAttributes;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JTextField jtfMatAge;
     private javax.swing.JTextField jtfSize;
     private javax.swing.JTextField jtfWeight;
     // End of variables declaration//GEN-END:variables

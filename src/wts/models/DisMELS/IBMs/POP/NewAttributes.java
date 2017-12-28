@@ -9,10 +9,27 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import wts.models.DisMELS.framework.IBMAttributes.IBMAttribute;
+import wts.models.DisMELS.framework.IBMAttributes.IBMAttributeBoolean;
+import wts.models.DisMELS.framework.IBMAttributes.IBMAttributeDouble;
 
 /**
- *
- * @author william.stockhausen
+ * Class encapsulating new attributes defined for the POP IBM.
+ * <p>
+ * The new attributes are (in order):
+ * <ul>
+ *  <li> attached - "attached"
+ *  <li> sie - "size (cm)"
+ *  <li> weight - "weight (kg)"
+ *  <li> temperature - "temperature deg C"
+ *  <li> salinity - "salinity"
+ *  <li> bathymetry - "bathymetry"
+ *  <li> romsvar1 - "romsvar1"
+ *  <li> romsvar2 - "romsvar2"
+ *  <li> romsvar3 - "romsvar3"
+ *  <li> romsvar4 - "romsvar4"
+ *  <li> romsvar5 - "romsvar5"
+ * </ul>
  */
 public class NewAttributes {
     /** Number of non-standard attributes defined by this class */
@@ -31,6 +48,7 @@ public class NewAttributes {
     public static final String PROP_romsvar5    = "romsvar5";
     
     private static final Set<String> newKeys = new LinkedHashSet<>((int)(2*numNewAttributes));
+    protected static final Map<String,IBMAttribute> newMapAttributes = new HashMap<>((int)(2*(numNewAttributes)));    
     private static final Map<String,Object> newMapValues = new HashMap<>((int)(2*numNewAttributes));
     
     /**
@@ -42,19 +60,38 @@ public class NewAttributes {
         if (newKeys.isEmpty()){
             //set static field information
             String key;
-            key = NewAttributes.PROP_attached;   newKeys.add(key); 
-            key = NewAttributes.PROP_size;       newKeys.add(key); 
-            key = NewAttributes.PROP_weight;     newKeys.add(key); 
-            key = NewAttributes.PROP_temperature;newKeys.add(key); 
-            key = NewAttributes.PROP_salinity;   newKeys.add(key); 
-            key = NewAttributes.PROP_bathymetry; newKeys.add(key); 
-            key = NewAttributes.PROP_romsvar1;   newKeys.add(key); 
-            key = NewAttributes.PROP_romsvar2;   newKeys.add(key); 
-            key = NewAttributes.PROP_romsvar3;   newKeys.add(key); 
-            key = NewAttributes.PROP_romsvar4;   newKeys.add(key); 
-            key = NewAttributes.PROP_romsvar5;   newKeys.add(key); 
+            key = PROP_attached;   newKeys.add(key); 
+            key = PROP_size;       newKeys.add(key); 
+            key = PROP_weight;     newKeys.add(key); 
+            key = PROP_temperature;newKeys.add(key); 
+            key = PROP_salinity;   newKeys.add(key); 
+            key = PROP_bathymetry; newKeys.add(key); 
+            key = PROP_romsvar1;   newKeys.add(key); 
+            key = PROP_romsvar2;   newKeys.add(key); 
+            key = PROP_romsvar3;   newKeys.add(key); 
+            key = PROP_romsvar4;   newKeys.add(key); 
+            key = PROP_romsvar5;   newKeys.add(key); 
         }
         return newKeys;
+    }
+    
+    public static final Map<String,IBMAttribute> getNewMapAttributes(){
+        if (newMapValues.isEmpty()){
+            if (newKeys.isEmpty()) getNewKeys();
+            String key;
+            key = PROP_attached;   newMapAttributes.put(key,new IBMAttributeBoolean(key,key));
+            key = PROP_size;       newMapAttributes.put(key,new IBMAttributeDouble(key,key)); 
+            key = PROP_weight;     newMapAttributes.put(key,new IBMAttributeDouble(key,key));  
+            key = PROP_temperature;newMapAttributes.put(key,new IBMAttributeDouble(key,key));  
+            key = PROP_salinity;   newMapAttributes.put(key,new IBMAttributeDouble(key,key)); 
+            key = PROP_bathymetry; newMapAttributes.put(key,new IBMAttributeDouble(key,key)); 
+            key = PROP_romsvar1;   newMapAttributes.put(key,new IBMAttributeDouble(key,key)); 
+            key = PROP_romsvar2;   newMapAttributes.put(key,new IBMAttributeDouble(key,key));  
+            key = PROP_romsvar3;   newMapAttributes.put(key,new IBMAttributeDouble(key,key)); 
+            key = PROP_romsvar4;   newMapAttributes.put(key,new IBMAttributeDouble(key,key));  
+            key = PROP_romsvar5;   newMapAttributes.put(key,new IBMAttributeDouble(key,key));  
+        }
+        return newMapAttributes;
     }
     
     public static final Map<String,Object> getNewMapValues(){

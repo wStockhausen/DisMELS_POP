@@ -1,22 +1,20 @@
 /*
- * LarvaStageAttributes.java
+ * AbstractPOPAttributes.java
  */
 
-package wts.models.DisMELS.IBMs.POP.Larva;
+package wts.models.DisMELS.IBMs.POP;
 
 import java.util.*;
 import java.util.logging.Logger;
-import org.openide.util.lookup.ServiceProvider;
-import wts.models.DisMELS.IBMs.POP.NewAttributes;
 import wts.models.DisMELS.framework.AbstractLHSAttributes;
 import wts.models.DisMELS.framework.IBMAttributes.IBMAttribute;
-import wts.models.DisMELS.framework.IBMAttributes.IBMAttributeDouble;
 import wts.models.DisMELS.framework.LifeStageAttributesInterface;
 
 /**
- * DisMELS class representing attributes for POP larvae with maternal effects.
+ * Abstract DisMELS class encapsulating attributes for several POP life stage classes 
+ * (i.e., adults, benthic juveniles and settlers).
  * <p>
- * The complete list of attributes and keys are (in order):
+ * The complete list of attributes and keys for this abstract class is (in order):
  * <ul>
  *  <li> typeName - "Life stage type name"
  *  <li> id - "ID"
@@ -47,23 +45,13 @@ import wts.models.DisMELS.framework.LifeStageAttributesInterface;
  *  <li> romsvar3 - "romsvar3"
  *  <li> romsvar4 - "romsvar4"
  *  <li> romsvar5 - "romsvar5"
- *  <li> MaternalAge - "maternal age"
- *  <li> OGV - "oil globule volume"
  * </ul>
  */
-@ServiceProvider(service=wts.models.DisMELS.framework.LifeStageAttributesInterface.class)
-public class LarvaStageAttributes extends AbstractLHSAttributes {
-    //attributes specific to this class
-    /** number of keys new to this class */
-    public static final int numNewAttributes = 2;
-    /** key for the maternal age attribute */
-    public static final String PROP_MaternalAge = "maternal age";
-    /** key for the oil globule volume attribute */
-    public static final String PROP_OGV         = "oil globule volume";
+public abstract class AbstractPOPAttributes extends AbstractLHSAttributes {
     
     /** total number of attributes for this class */
-    protected static final int totNumAttributes = AbstractLHSAttributes.numAttributes+NewAttributes.numNewAttributes+LarvaStageAttributes.numNewAttributes;
-    
+    protected static final int totNumAttributes = AbstractLHSAttributes.numAttributes+NewAttributes.numNewAttributes;
+        
     /** set of all keys to attributes */
     protected static final Set<String> allKeys = new LinkedHashSet<>((int)(2*(totNumAttributes)));
     /** map of all keys to attributes */
@@ -75,16 +63,14 @@ public class LarvaStageAttributes extends AbstractLHSAttributes {
     /** array of short names associated with the attributes */
     protected static final String[] shortNames = new String[totNumAttributes];
    
-    /** flag to print debugging info */
-    public static boolean debug = false;
     /** the class logger for debugging info */
-    private static final Logger logger = Logger.getLogger(LarvaStageAttributes.class.getName());
+    private static final Logger logger = Logger.getLogger(AbstractPOPAttributes.class.getName());
     
     /**
      * This constructor is provided only to facilitate the ServiceProvider functionality.
      * DO NOT USE IT!!
      */
-    public LarvaStageAttributes(){
+    protected AbstractPOPAttributes(){
         super("NULL");
         finishInstantiation();
     }
@@ -92,62 +78,37 @@ public class LarvaStageAttributes extends AbstractLHSAttributes {
     /**
      * Creates a new attributes instance with type name 'typeName'.
      */
-    public LarvaStageAttributes(String typeName) {
+    protected AbstractPOPAttributes(String typeName) {
         super(typeName);
         finishInstantiation();
     }
-    
+
     private void finishInstantiation(){
         if (mapAllAttributes.isEmpty()){
             //set static field information
-            ////attributes map
             mapAllAttributes.putAll(AbstractLHSAttributes.mapAttributes);//add from AbstractLHSAttributes
             mapAllAttributes.putAll(NewAttributes.getNewMapAttributes());//add from NewAttributes
-            ////add attributes defined in this class
-            String key;
-            key = PROP_MaternalAge; mapAllAttributes.put(key, new IBMAttributeDouble(key,key));
-            key = PROP_OGV;         mapAllAttributes.put(key, new IBMAttributeDouble(key,key));
-            ////keys
             allKeys.addAll(AbstractLHSAttributes.keys);//add from AbstractLHSAttributes
             allKeys.addAll(NewAttributes.getNewKeys());//add from NewAttributes
-            allKeys.add(PROP_MaternalAge);
-            allKeys.add(PROP_OGV);
-            ////create aKeys
             Iterator<String> it = allKeys.iterator();
             int j = 0; it.next();//skip typeName
             while (it.hasNext()) aKeys[j++] = it.next();
         }
         //set instance information with dummy values (already done for superclass)
         mapValues.putAll(NewAttributes.getNewMapValues());
-        mapValues.put(PROP_MaternalAge, new Double(0.0));
-        mapValues.put(PROP_OGV,         new Double(0.0));
     }
     
     /**
-     * Returns a deep copy of the instance.  Values are copied.  
-     * Any listeners on 'this' are not(?) copied, so these need to be hooked up.
-     * @return - the clone.
+     *  This method should be overridden by extending classes.
      */
     @Override
-    public Object clone() {
-        LarvaStageAttributes clone = new LarvaStageAttributes(typeName);
-        for (String key: allKeys) clone.setValue(key,this.getValue(key));
-        return clone;
-    }
+    public abstract LifeStageAttributesInterface createInstance(final String[] strv);
 
     /**
-     * Returns a new instance constructed from the values of the string[].
-     * The first value in the string vector must be the type name.
-     * Values are set internally by calling setValues(strv) on the new instance.
-     * @param strv - vector of values (as Strings) 
-     * @return - the new instance
+     *  This method should be overridden by extending classes.
      */
     @Override
-    public LarvaStageAttributes createInstance(final String[] strv) {
-        LarvaStageAttributes atts = new LarvaStageAttributes(strv[0]);//this sets atts.typeName
-        atts.setValues(strv);
-        return atts;
-    }
+    public abstract Object clone() throws CloneNotSupportedException;
 
     /**
      * Returns the attribute values as an ArrayList (including typeName).
@@ -158,8 +119,6 @@ public class LarvaStageAttributes extends AbstractLHSAttributes {
     public ArrayList getArrayList() {
         ArrayList a = super.getArrayList();
         for (String key: NewAttributes.getNewKeys()) a.add(getValue(key));
-        a.add(getValue(PROP_MaternalAge));
-        a.add(getValue(PROP_OGV));
         return a;
     }
 
@@ -188,8 +147,6 @@ public class LarvaStageAttributes extends AbstractLHSAttributes {
         String str = super.getCSV();
         Iterator<String> it = NewAttributes.getNewKeys().iterator();
         while (it.hasNext()) str = str+cc+getValueAsString(it.next());
-        str = str+cc+getValueAsString(PROP_MaternalAge);
-        str = str+cc+getValueAsString(PROP_OGV);
         return str;
     }
                 
@@ -252,7 +209,7 @@ public class LarvaStageAttributes extends AbstractLHSAttributes {
 
     /**
      * Returns short names for all attributes (including typeName) as a String[]
-     * in the order allKeys is defined.
+     * in the order the allKeys are defined.
      * 
      * @return 
      */
@@ -277,15 +234,11 @@ public class LarvaStageAttributes extends AbstractLHSAttributes {
         //set the values of the new attributes
         int j = AbstractLHSAttributes.numAttributes;
         try {
-            //set attributes from NewAttributes class
             for (String key: NewAttributes.getNewKeys()) setValueFromString(key,strv[j++]);
-            //set attributes defined specifically in this class
-            setValueFromString(PROP_MaternalAge,strv[j++]);
-            setValueFromString(PROP_OGV,strv[j++]);
         } catch (java.lang.IndexOutOfBoundsException ex) {
             //@TODO: should throw an exception here that identifies the problem
-            String[] aKeys = new String[LarvaStageAttributes.allKeys.size()];
-            aKeys = LarvaStageAttributes.allKeys.toArray(aKeys);
+            String[] aKeys = new String[allKeys.size()];
+            aKeys = allKeys.toArray(aKeys);
                 String str = "Missing attribute value for "+aKeys[j-1]+".\n"+
                              "Prior values are ";
                 for (int i=0;i<(j);i++) str = str+strv[i]+" ";
@@ -296,8 +249,8 @@ public class LarvaStageAttributes extends AbstractLHSAttributes {
                         javax.swing.JOptionPane.ERROR_MESSAGE);
                 throw ex;
         } catch (java.lang.NumberFormatException ex) {
-            String[] aKeys = new String[LarvaStageAttributes.allKeys.size()];
-            aKeys = LarvaStageAttributes.allKeys.toArray(aKeys);
+            String[] aKeys = new String[allKeys.size()];
+            aKeys = allKeys.toArray(aKeys);
             String str = "Bad attribute value for "+aKeys[j-2]+".\n"+
                          "Value was '"+strv[j-1]+"'.\n"+
                          "Entry was '";
@@ -328,23 +281,19 @@ public class LarvaStageAttributes extends AbstractLHSAttributes {
     
     @Override
     public String getValueAsString(String key){
-        if (debug) logger.info("getting '"+key+"' for id "+getValue(LifeStageAttributesInterface.PROP_id).toString());
         Object val = getValue(key);
         IBMAttribute att = mapAllAttributes.get(key);
         att.setValue(val);
         String str = att.getValueAsString();
-        if (debug) logger.info("--value: "+str);
         return str;
     }
     
     @Override
     public void setValueFromString(String key, String value) throws NumberFormatException {
         if (!key.equals(PROP_typeName)){
-            if (debug) logger.info("setting '"+key+"' to "+value+" for id "+getValue(LifeStageAttributesInterface.PROP_id).toString());
             IBMAttribute att = mapAllAttributes.get(key);
             att.parseValue(value);
             setValue(key,att.getValue());
-            if (debug) logger.info("--value set = "+getValue(key).toString());
         }
     }
 }

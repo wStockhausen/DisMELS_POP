@@ -24,6 +24,7 @@ import wts.models.DisMELS.IBMFunctions.Mortality.TemperatureDependentMortalityRa
 import wts.models.DisMELS.IBMFunctions.Movement.DielVerticalMigration_FixedDepthRanges;
 import wts.models.DisMELS.IBMFunctions.SwimmingBehavior.ConstantMovementRateFunction;
 import wts.models.DisMELS.IBMFunctions.SwimmingBehavior.PowerLawSwimmingSpeedFunction;
+import wts.models.DisMELS.IBMs.POP.Adult.InitialOGVFunction;
 import wts.models.DisMELS.framework.AbstractLHSParameters;
 import wts.models.DisMELS.framework.IBMFunctions.IBMFunctionInterface;
 import wts.models.DisMELS.framework.IBMFunctions.IBMParameter;
@@ -32,8 +33,7 @@ import wts.models.DisMELS.framework.IBMFunctions.IBMParameterDouble;
 import wts.models.DisMELS.framework.LifeStageParametersInterface;
 
 /**
- * DisMELS class representing parameters for arrowtooth flounder larvae
- * for the GOA IERP Modeling project.
+ * DisMELS class representing parameters for POP larvae.
  * 
  * This class uses the IBMParameters/IBMFunctions approach to specifying stage-specific parameters.
  * 
@@ -45,7 +45,7 @@ public class LarvaStageParameters extends AbstractLHSParameters {
     public static final long serialVersionUID = 1L;
     
     /** the number of IBMParameter objects defined in the class */
-    public static final int numParams = 9;
+    public static final int numParams = 10;
     public static final String PARAM_isSuperIndividual      = "is a super-individual?";
     public static final String PARAM_horizRWP               = "horizontal random walk parameter [m^2]/[s]";
     public static final String PARAM_minStageDuration       = "min stage duration [d]";
@@ -55,10 +55,12 @@ public class LarvaStageParameters extends AbstractLHSParameters {
     public static final String PARAM_randomizeTransitions   = "randomize transitions?";
     public static final String PARAM_initialSize            = "initial size in stage (mm)";
     public static final String PARAM_initialWeight          = "initial weight in stage (g)";
+    public static final String PARAM_recalcOGV              = "recalculate OGV?";
     
     
     /** the number of IBMFunction categories defined in the class */
-    public static final int numFunctionCats = 4;
+    public static final int numFunctionCats = 5;
+    public static final String FCAT_OGV              = "initial OGV";
     public static final String FCAT_Growth           = "growth";
     public static final String FCAT_Mortality        = "mortality";
     public static final String FCAT_VerticalMovement = "vertical movement";
@@ -108,12 +110,14 @@ public class LarvaStageParameters extends AbstractLHSParameters {
         key = PARAM_maxStageDuration;     setOfParamKeys.add(key); mapParams.put(key,new IBMParameterDouble(key,key,365.0));
         key = PARAM_minSize;              setOfParamKeys.add(key); mapParams.put(key,new IBMParameterDouble(key,key,0.0));
         key = PARAM_minWeight;            setOfParamKeys.add(key); mapParams.put(key,new IBMParameterDouble(key,key,0.0));
+        key = PARAM_recalcOGV;            setOfParamKeys.add(key); mapParams.put(key,new IBMParameterBoolean(key,key,true));
         key = PARAM_randomizeTransitions; setOfParamKeys.add(key); mapParams.put(key,new IBMParameterBoolean(key,key,false));
     }
 
     @Override
     protected final void createMapToSelectedFunctions() {
         //create the set of function category keys for this class
+        setOfFunctionCategories.add(FCAT_OGV);
         setOfFunctionCategories.add(FCAT_Growth);
         setOfFunctionCategories.add(FCAT_Mortality);
         setOfFunctionCategories.add(FCAT_VerticalMovement);
@@ -121,6 +125,11 @@ public class LarvaStageParameters extends AbstractLHSParameters {
         
         //create the map from function categories to potential functions in each category
         String cat; Map<String,IBMFunctionInterface> mapOfPotentialFunctions; IBMFunctionInterface ifi;
+        cat = FCAT_OGV;  
+        mapOfPotentialFunctions = new LinkedHashMap<>(2); mapOfPotentialFunctionsByCategory.put(cat,mapOfPotentialFunctions);
+        ifi = new InitialOGVFunction();
+            mapOfPotentialFunctions.put(ifi.getFunctionName(),ifi);
+            
         cat = FCAT_Growth;  
         mapOfPotentialFunctions = new LinkedHashMap<>(8); mapOfPotentialFunctionsByCategory.put(cat,mapOfPotentialFunctions);
         ifi = new ExponentialGrowthFunction();

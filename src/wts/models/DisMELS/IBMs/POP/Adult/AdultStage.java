@@ -121,10 +121,10 @@ public class AdultStage extends AbstractLHS {
     private IBMFunctionInterface fcnGrowth = null; 
     /** IBM function selected for mortality */
     private IBMFunctionInterface fcnMortality = null; 
-    /** IBM function selected for maturity */
-    private IBMFunctionInterface fcnMaturity = null; 
     /** IBM function selected for fecundity */
     private IBMFunctionInterface fcnFecundity = null; 
+    /** IBM function selected for initial larval condition */
+    private IBMFunctionInterface fcnOGV = null; 
     
     /** flag to print debugging info */
     public static boolean debug = false;
@@ -404,8 +404,8 @@ public class AdultStage extends AbstractLHS {
     private void setIBMFunctions(){
         fcnGrowth         = params.getSelectedIBMFunctionForCategory(AdultStageParameters.FCAT_Growth);
         fcnMortality      = params.getSelectedIBMFunctionForCategory(AdultStageParameters.FCAT_Mortality);
-        fcnMaturity       = params.getSelectedIBMFunctionForCategory(AdultStageParameters.FCAT_Maturity);
         fcnFecundity      = params.getSelectedIBMFunctionForCategory(AdultStageParameters.FCAT_Fecundity);
+        fcnOGV            = params.getSelectedIBMFunctionForCategory(AdultStageParameters.FCAT_OGV);
     }
     
     /*
@@ -545,7 +545,7 @@ public class AdultStage extends AbstractLHS {
                     newAtts.setValue(LifeStageAttributesInterface.PROP_parentID,   atts.getValue(LifeStageAttributesInterface.PROP_id));
                     newAtts.setValue(LifeStageAttributesInterface.PROP_origID,     atts.getValue(LifeStageAttributesInterface.PROP_id));
                     newAtts.setValue(LifeStageAttributesInterface.PROP_startTime,  time);
-                    newAtts.setValue(LifeStageAttributesInterface.PROP_time,       atts.getValue(LifeStageAttributesInterface.PROP_time));
+                    newAtts.setValue(LifeStageAttributesInterface.PROP_time,       time);
                     newAtts.setValue(LifeStageAttributesInterface.PROP_horizType,  atts.getValue(LifeStageAttributesInterface.PROP_horizType));
                     newAtts.setValue(LifeStageAttributesInterface.PROP_vertType,   atts.getValue(LifeStageAttributesInterface.PROP_vertType));
                     newAtts.setValue(LifeStageAttributesInterface.PROP_horizPos1,  atts.getValue(LifeStageAttributesInterface.PROP_horizPos1));
@@ -559,6 +559,15 @@ public class AdultStage extends AbstractLHS {
                     newAtts.setValue(LifeStageAttributesInterface.PROP_ageInStage, 0.0);
                     newAtts.setValue(LifeStageAttributesInterface.PROP_number,     1.0);//TODO:change this to fecundity/numSpawnPerIndiv
                     newAtts.setValue(NewAttributes.PROP_attached,   true);
+                    //calculate initial oil globule volume size
+                    double matAge = age/365.0;//convert from age in days to age in years
+                    double weekOfYear = (1.0*GlobalInfo.getInstance().getCalendar().getDayOfYear())/7.0;
+                    Double ogv = 0.0;
+                    if (fcnOGV instanceof InitialOGVFunction){
+                        ogv = (Double) fcnOGV.calculate(new double[]{matAge,weekOfYear});
+                    }
+                    newAtts.setValue(LarvaStageAttributes.PROP_MaternalAge,matAge);
+                    newAtts.setValue(LarvaStageAttributes.PROP_OGV,        ogv);
                     //copy LagrangianParticle information
                     nLHS.setLagrangianParticle(lp);
                     //start track at last position of oldLHS track
