@@ -24,6 +24,7 @@ import wts.models.DisMELS.IBMFunctions.Mortality.TemperatureDependentMortalityRa
 import wts.models.DisMELS.IBMFunctions.Movement.DielVerticalMigration_FixedDepthRanges;
 import wts.models.DisMELS.IBMFunctions.SwimmingBehavior.ConstantMovementRateFunction;
 import wts.models.DisMELS.IBMFunctions.SwimmingBehavior.PowerLawSwimmingSpeedFunction;
+import wts.models.DisMELS.IBMs.POP.GrowthByConsumptionFunction;
 import wts.models.DisMELS.framework.AbstractLHSParameters;
 import wts.models.DisMELS.framework.IBMFunctions.IBMFunctionInterface;
 import wts.models.DisMELS.framework.IBMFunctions.IBMParameter;
@@ -123,6 +124,8 @@ public class SettlerStageParameters extends AbstractLHSParameters {
         String cat; Map<String,IBMFunctionInterface> mapOfPotentialFunctions; IBMFunctionInterface ifi;
         cat = FCAT_Growth;  
         mapOfPotentialFunctions = new LinkedHashMap<>(8); mapOfPotentialFunctionsByCategory.put(cat,mapOfPotentialFunctions);
+        ifi = new GrowthByConsumptionFunction();
+            mapOfPotentialFunctions.put(ifi.getFunctionName(),ifi);
         ifi = new ExponentialGrowthFunction();
             mapOfPotentialFunctions.put(ifi.getFunctionName(),ifi);
         ifi = new LinearGrowthFunction();

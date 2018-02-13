@@ -1,7 +1,7 @@
 /**
- * EggDevelopmentFunction.java
+ * InitialOGVFunction.java
  */
-package wts.models.DisMELS.IBMs.POP.Adult;
+package wts.models.DisMELS.IBMs.POP;
 
 import com.wtstockhausen.utils.RandomNumberGenerator;
 import java.util.logging.Logger;

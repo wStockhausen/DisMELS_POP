@@ -15,6 +15,7 @@ import wts.models.DisMELS.IBMFunctions.Miscellaneous.ConstantFunction;
 import wts.models.DisMELS.IBMFunctions.Mortality.ConstantMortalityRate;
 import wts.models.DisMELS.IBMFunctions.Mortality.TemperatureDependentMortalityRate_Houde1989;
 import wts.models.DisMELS.IBMs.POP.BenthicJuvenile.BenthicJuvenileStage;
+import wts.models.DisMELS.IBMs.POP.GrowthByConsumptionFunction;
 import wts.models.DisMELS.IBMs.POP.NewAttributes;
 import wts.models.DisMELS.framework.*;
 import wts.models.DisMELS.framework.IBMFunctions.IBMFunctionInterface;
@@ -719,7 +720,35 @@ public class SettlerStage extends AbstractLHS {
      * @param dt - time step in seconds
      */
     private void updateSize(double dt) {
-        if (fcnGrowth instanceof ExponentialGrowthFunction){
+        if (fcnGrowth instanceof GrowthByConsumptionFunction){
+            /**
+            * Compute time of local sunrise, sunset and solar noon (in minutes, UTC) 
+            * for given lon, lat, and time (in Julian day-of-year).
+            *@param lon : longitude of position (deg Greenwich, prime meridian)
+            *@param lat : latitude of position (deg)
+            *@param time : day-of-year (1-366, fractional part indicates time-of-day)
+            *@return double[5] = [0] time of sunrise (min UTC from midnight)
+            *                    [1] time of sunset (min UTC from midnight)
+            *                    [2] time of solarnoon (min UTC from midnight)
+            *                    [3] solar declination angle (deg)
+            *                    [4] solar zenith angle (deg)
+            * If sunrise/sunset=NaN then its either 24-hr day or night 
+            * (if lat*declination>0, it's summer in the hemisphere, hence daytime). 
+            * Alternatively, if the solar zenith angle > 90.833 deg, then it is night.
+            */
+            double[] ss = DateTimeFunctions.computeSunriseSunset(lon,lat,GlobalInfo.getInstance().getCalendar().getYearDay());
+            double isLight = 0.0;                 //default: assume it's night
+            if ((90.833-ss[4]) > 0) isLight = 1.0;//it's daytime
+            /**
+             * @param vars - the inputs variables (wgt, T, isLight) as a double[].
+             * @return     - the function value (z[dt]) as a Double 
+             */
+            double[] res = (double[])fcnGrowth.calculate(new double[]{weight,temperature,isLight});
+            logger.info("--updateSize: rtGrw = "+res[0]+"; dt = "+dt/DAY_SECS+"; isLight = "+isLight);
+            double w0 = weight;
+            weight = weight + res[0]*dt/DAY_SECS;//dt is in sec, res[0] is growth in micrograms/day
+            logger.info("--w0 = "+w0+"; dw = "+res[0]*dt/DAY_SECS+"; wt = "+weight);
+        } else if (fcnGrowth instanceof ExponentialGrowthFunction){
             /**
              * @param vars - the inputs variables, dt (in days) and z0, as a double[].
              * @return     - the function value (z[dt]) as a Double 

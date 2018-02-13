@@ -1,10 +1,5 @@
 /*
- * GenericLHSParameters.java
- *
- * Created on March 20, 2012
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * AdultStageParameters.java
  */
 
 package wts.models.DisMELS.IBMs.POP.Adult;
@@ -18,7 +13,6 @@ import java.util.logging.Logger;
 import org.openide.util.lookup.ServiceProvider;
 import wts.models.DisMELS.IBMFunctions.Growth.vonBertalanffyGrowthFunction;
 import wts.models.DisMELS.IBMFunctions.Miscellaneous.ConstantFunction;
-import wts.models.DisMELS.IBMFunctions.Miscellaneous.LogisticFunction;
 import wts.models.DisMELS.IBMFunctions.Miscellaneous.PowerLawFunction;
 import wts.models.DisMELS.framework.AbstractLHSParameters;
 import wts.models.DisMELS.framework.IBMFunctions.IBMFunctionInterface;
@@ -26,6 +20,7 @@ import wts.models.DisMELS.framework.IBMFunctions.IBMParameter;
 import wts.models.DisMELS.framework.IBMFunctions.IBMParameterBoolean;
 import wts.models.DisMELS.framework.IBMFunctions.IBMParameterDouble;
 import wts.models.DisMELS.framework.LifeStageParametersInterface;
+import wts.models.DisMELS.IBMs.POP.InitialOGVFunction;
 
 /**
  * DisMELS class representing parameters for POP adults.

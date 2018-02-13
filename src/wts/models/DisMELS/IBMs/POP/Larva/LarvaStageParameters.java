@@ -24,7 +24,8 @@ import wts.models.DisMELS.IBMFunctions.Mortality.TemperatureDependentMortalityRa
 import wts.models.DisMELS.IBMFunctions.Movement.DielVerticalMigration_FixedDepthRanges;
 import wts.models.DisMELS.IBMFunctions.SwimmingBehavior.ConstantMovementRateFunction;
 import wts.models.DisMELS.IBMFunctions.SwimmingBehavior.PowerLawSwimmingSpeedFunction;
-import wts.models.DisMELS.IBMs.POP.Adult.InitialOGVFunction;
+import wts.models.DisMELS.IBMs.POP.InitialOGVFunction;
+import wts.models.DisMELS.IBMs.POP.GrowthByConsumptionFunction;
 import wts.models.DisMELS.framework.AbstractLHSParameters;
 import wts.models.DisMELS.framework.IBMFunctions.IBMFunctionInterface;
 import wts.models.DisMELS.framework.IBMFunctions.IBMParameter;
@@ -51,10 +52,10 @@ public class LarvaStageParameters extends AbstractLHSParameters {
     public static final String PARAM_minStageDuration       = "min stage duration [d]";
     public static final String PARAM_maxStageDuration       = "max stage duration [d]";
     public static final String PARAM_minSize                = "min size before metamorphosis (mm)";
-    public static final String PARAM_minWeight              = "min weight before metamorphosis (g)";
+    public static final String PARAM_minWeight              = "min weight before metamorphosis (micrograms)";
     public static final String PARAM_randomizeTransitions   = "randomize transitions?";
     public static final String PARAM_initialSize            = "initial size in stage (mm)";
-    public static final String PARAM_initialWeight          = "initial weight in stage (g)";
+    public static final String PARAM_initialWeight          = "initial weight in stage (micrograms)";
     public static final String PARAM_recalcOGV              = "recalculate OGV?";
     
     
@@ -132,6 +133,8 @@ public class LarvaStageParameters extends AbstractLHSParameters {
             
         cat = FCAT_Growth;  
         mapOfPotentialFunctions = new LinkedHashMap<>(8); mapOfPotentialFunctionsByCategory.put(cat,mapOfPotentialFunctions);
+        ifi = new GrowthByConsumptionFunction();
+            mapOfPotentialFunctions.put(ifi.getFunctionName(),ifi);
         ifi = new ExponentialGrowthFunction();
             mapOfPotentialFunctions.put(ifi.getFunctionName(),ifi);
         ifi = new LinearGrowthFunction();
