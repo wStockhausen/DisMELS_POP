@@ -1,10 +1,5 @@
 /*
  * SettlerStageParameters.java
- *
- * Created on March 20, 2012
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package wts.models.DisMELS.IBMs.POP.Settler;
@@ -25,6 +20,7 @@ import wts.models.DisMELS.IBMFunctions.Movement.DielVerticalMigration_FixedDepth
 import wts.models.DisMELS.IBMFunctions.SwimmingBehavior.ConstantMovementRateFunction;
 import wts.models.DisMELS.IBMFunctions.SwimmingBehavior.PowerLawSwimmingSpeedFunction;
 import wts.models.DisMELS.IBMs.POP.GrowthByConsumptionFunction;
+import wts.models.DisMELS.IBMs.POP.LengthAtWeightFunction;
 import wts.models.DisMELS.framework.AbstractLHSParameters;
 import wts.models.DisMELS.framework.IBMFunctions.IBMFunctionInterface;
 import wts.models.DisMELS.framework.IBMFunctions.IBMParameter;
@@ -33,7 +29,7 @@ import wts.models.DisMELS.framework.IBMFunctions.IBMParameterDouble;
 import wts.models.DisMELS.framework.LifeStageParametersInterface;
 
 /**
- * DisMELS class representing parameters for arrowtooth flounder settlers
+ * DisMELS class representing parameters for POP settlers
  * for the GOA IERP Modeling project.
  * 
  * This class uses the IBMParameters/IBMFunctions approach to specifying stage-specific parameters.
@@ -59,7 +55,8 @@ public class SettlerStageParameters extends AbstractLHSParameters {
     
     
     /** the number of IBMFunction categories defined in the class */
-    public static final int numFunctionCats = 4;
+    public static final int numFunctionCats = 5;
+    public static final String FCAT_LengthAtWeight   = "length-at-weight";
     public static final String FCAT_Growth           = "growth";
     public static final String FCAT_Mortality        = "mortality";
     public static final String FCAT_VerticalMovement = "vertical movement";
@@ -115,6 +112,7 @@ public class SettlerStageParameters extends AbstractLHSParameters {
     @Override
     protected final void createMapToSelectedFunctions() {
         //create the set of function category keys for this class
+        setOfFunctionCategories.add(FCAT_LengthAtWeight);
         setOfFunctionCategories.add(FCAT_Growth);
         setOfFunctionCategories.add(FCAT_Mortality);
         setOfFunctionCategories.add(FCAT_VerticalMovement);
@@ -122,6 +120,11 @@ public class SettlerStageParameters extends AbstractLHSParameters {
         
         //create the map from function categories to potential functions in each category
         String cat; Map<String,IBMFunctionInterface> mapOfPotentialFunctions; IBMFunctionInterface ifi;
+        cat = FCAT_LengthAtWeight;  
+        mapOfPotentialFunctions = new LinkedHashMap<>(2); mapOfPotentialFunctionsByCategory.put(cat,mapOfPotentialFunctions);
+        ifi = new LengthAtWeightFunction();
+            mapOfPotentialFunctions.put(ifi.getFunctionName(),ifi);
+            
         cat = FCAT_Growth;  
         mapOfPotentialFunctions = new LinkedHashMap<>(8); mapOfPotentialFunctionsByCategory.put(cat,mapOfPotentialFunctions);
         ifi = new GrowthByConsumptionFunction();

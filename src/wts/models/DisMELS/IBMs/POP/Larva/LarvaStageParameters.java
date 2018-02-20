@@ -1,10 +1,5 @@
 /*
  * LarvaStageParameters.java
- *
- * Created on March 20, 2012
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package wts.models.DisMELS.IBMs.POP.Larva;
@@ -26,6 +21,7 @@ import wts.models.DisMELS.IBMFunctions.SwimmingBehavior.ConstantMovementRateFunc
 import wts.models.DisMELS.IBMFunctions.SwimmingBehavior.PowerLawSwimmingSpeedFunction;
 import wts.models.DisMELS.IBMs.POP.InitialOGVFunction;
 import wts.models.DisMELS.IBMs.POP.GrowthByConsumptionFunction;
+import wts.models.DisMELS.IBMs.POP.LengthAtWeightFunction;
 import wts.models.DisMELS.framework.AbstractLHSParameters;
 import wts.models.DisMELS.framework.IBMFunctions.IBMFunctionInterface;
 import wts.models.DisMELS.framework.IBMFunctions.IBMParameter;
@@ -60,8 +56,9 @@ public class LarvaStageParameters extends AbstractLHSParameters {
     
     
     /** the number of IBMFunction categories defined in the class */
-    public static final int numFunctionCats = 5;
+    public static final int numFunctionCats = 6;
     public static final String FCAT_OGV              = "initial OGV";
+    public static final String FCAT_LengthAtWeight   = "length-at-weight";
     public static final String FCAT_Growth           = "growth";
     public static final String FCAT_Mortality        = "mortality";
     public static final String FCAT_VerticalMovement = "vertical movement";
@@ -119,6 +116,7 @@ public class LarvaStageParameters extends AbstractLHSParameters {
     protected final void createMapToSelectedFunctions() {
         //create the set of function category keys for this class
         setOfFunctionCategories.add(FCAT_OGV);
+        setOfFunctionCategories.add(FCAT_LengthAtWeight);
         setOfFunctionCategories.add(FCAT_Growth);
         setOfFunctionCategories.add(FCAT_Mortality);
         setOfFunctionCategories.add(FCAT_VerticalMovement);
@@ -129,6 +127,11 @@ public class LarvaStageParameters extends AbstractLHSParameters {
         cat = FCAT_OGV;  
         mapOfPotentialFunctions = new LinkedHashMap<>(2); mapOfPotentialFunctionsByCategory.put(cat,mapOfPotentialFunctions);
         ifi = new InitialOGVFunction();
+            mapOfPotentialFunctions.put(ifi.getFunctionName(),ifi);
+            
+        cat = FCAT_LengthAtWeight;  
+        mapOfPotentialFunctions = new LinkedHashMap<>(2); mapOfPotentialFunctionsByCategory.put(cat,mapOfPotentialFunctions);
+        ifi = new LengthAtWeightFunction();
             mapOfPotentialFunctions.put(ifi.getFunctionName(),ifi);
             
         cat = FCAT_Growth;  
@@ -233,7 +236,7 @@ public class LarvaStageParameters extends AbstractLHSParameters {
     }
 
     /**
-     *  Creates an instance of SimplePelagicLHSParameters.
+     *  Creates an instance of LarvaStageParameters.
      *
      *@param strv - array of values (as Strings) used to create the new instance. 
      *              This should be typeName followed by parameter value (as Strings)

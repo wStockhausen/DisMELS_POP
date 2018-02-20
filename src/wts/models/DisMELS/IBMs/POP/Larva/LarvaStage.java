@@ -17,6 +17,7 @@ import wts.models.DisMELS.IBMFunctions.Mortality.ConstantMortalityRate;
 import wts.models.DisMELS.IBMFunctions.Mortality.TemperatureDependentMortalityRate_Houde1989;
 import wts.models.DisMELS.IBMs.POP.InitialOGVFunction;
 import wts.models.DisMELS.IBMs.POP.GrowthByConsumptionFunction;
+import wts.models.DisMELS.IBMs.POP.LengthAtWeightFunction;
 import wts.models.DisMELS.IBMs.POP.NewAttributes;
 import wts.models.DisMELS.IBMs.POP.Settler.SettlerStage;
 import wts.models.DisMELS.framework.*;
@@ -115,7 +116,9 @@ public class LarvaStage extends AbstractLHS {
     
     /** IBM function selected for initial oil globule volume */
     private IBMFunctionInterface fcnIOGV = null; 
-    /** IBM function selected for development */
+    /** IBM function selected for length-at-weight */
+    private IBMFunctionInterface fcnLatW = null; 
+    /** IBM function selected for growth */
     private IBMFunctionInterface fcnGrowth = null; 
     /** IBM function selected for mortality */
     private IBMFunctionInterface fcnMort = null; 
@@ -404,6 +407,7 @@ public class LarvaStage extends AbstractLHS {
      */
     private void setIBMFunctions(){
         fcnIOGV    = params.getSelectedIBMFunctionForCategory(LarvaStageParameters.FCAT_OGV);
+        fcnLatW    = params.getSelectedIBMFunctionForCategory(LarvaStageParameters.FCAT_LengthAtWeight);
         fcnGrowth  = params.getSelectedIBMFunctionForCategory(LarvaStageParameters.FCAT_Growth);
         fcnMort    = params.getSelectedIBMFunctionForCategory(LarvaStageParameters.FCAT_Mortality);
         fcnVM      = params.getSelectedIBMFunctionForCategory(LarvaStageParameters.FCAT_VerticalMovement);
@@ -768,6 +772,10 @@ public class LarvaStage extends AbstractLHS {
             double w0 = weight;
             weight = weight + res[0]*dt/DAY_SECS;//dt is in sec, res[0] is growth in micrograms/day
             logger.info("--w0 = "+w0+"; dw = "+res[0]*dt/DAY_SECS+"; wt = "+weight);
+            if (fcnLatW instanceof LengthAtWeightFunction){
+                double newsize = (Double)fcnLatW.calculate(new double[]{weight});
+                if (newsize > size) size = newsize; //size cannot decrease 
+            }
         } else if (fcnGrowth instanceof ExponentialGrowthFunction){
             /**
              * @param vars - the inputs variables, dt (in days) and z0, as a double[].
