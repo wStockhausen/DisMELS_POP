@@ -3,11 +3,9 @@
  */
 package wts.models.DisMELS.IBMs.POP;
 
-import com.wtstockhausen.utils.RandomNumberGenerator;
 import java.util.logging.Logger;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.util.lookup.ServiceProviders;
-import wts.models.DisMELS.framework.GlobalInfo;
 import wts.models.DisMELS.framework.IBMFunctions.AbstractIBMFunction;
 import wts.models.DisMELS.framework.IBMFunctions.IBMFunctionInterface;
 import wts.models.DisMELS.framework.IBMFunctions.IBMGrowthFunctionInterface;
@@ -31,10 +29,10 @@ import wts.models.DisMELS.framework.IBMFunctions.IBMGrowthFunctionInterface;
  *  </ul>
  * </ul>
  * Value:
- * <ul><li>L - Double -  length corresponding to W </ul>
+ * <ul><li>L - Double -  length in mm corresponding to W </ul>
  * Calculation:
  * <ul>
- *  <li>  L = (W/pAlpha)^(1/pBeta);     //length corresponding to W, consistent with W = pAlpha*L^pBeta
+ *  <li>  L = (W/pAlpha)^(1/pBeta);     //length (mm) corresponding to W, consistent with W = pAlpha*L^pBeta
  * </ul>
  * 
  * @author William.Stockhausen
@@ -63,9 +61,9 @@ public class LengthAtWeightFunction extends AbstractIBMFunction implements IBMGr
             "\n\t*      vars - double[]{W}, where"+
             "\n\t*          W - double - weight (micrograms)"+
             "\n\t* Value:"+
-            "\n\t*      L - Double -  length corresponding to W"+
+            "\n\t*      L - Double -  length (in mm) corresponding to W"+
             "\n\t* Calculation:"+
-            "\n\t*   L = (W/pAlpha)^(1/pBeta);     //length corresponding to W, consistent with W = pAlpha*L^pBeta"+
+            "\n\t*   L = (W/pAlpha)^(1/pBeta);     //length (mm) corresponding to W, consistent with W = pAlpha*L^pBeta"+
             "\n\t* "+
             "\n\t* author: William.Stockhausen"+
             "\n\t**************************************************************************";
@@ -88,9 +86,9 @@ public class LengthAtWeightFunction extends AbstractIBMFunction implements IBMGr
     private static final Logger logger = Logger.getLogger(LengthAtWeightFunction.class.getName());
     
     /** value of the multiplicative coefficient for length-weight regression */
-    private double pAlpha = 0.894;//default value
+    private double pAlpha = 0.1674;//default value
     /** value of the power coefficient for length-weight regression */
-    private double pBeta = 3.0;
+    private double pBeta = 3.837;
 
     /** constructor for class */
     public LengthAtWeightFunction(){
@@ -98,7 +96,7 @@ public class LengthAtWeightFunction extends AbstractIBMFunction implements IBMGr
         String key; 
         key = PARAM_Alpha;    addParameter(key,Double.class, "multiplicative coefficient for length-weight regression");
         setParameterValue(key, pAlpha);
-        key = PARAM_Beta;     addParameter(key,Double.class, "power coefficient for length-weight regression?");
+        key = PARAM_Beta;     addParameter(key,Double.class, "power coefficient for length-weight regression");
         setParameterValue(key, pBeta);
     }
     
@@ -144,7 +142,7 @@ public class LengthAtWeightFunction extends AbstractIBMFunction implements IBMGr
      * <ul>
      *      <li> wgt - individual weight, in micrograms
      * </ul>
-     * @return  - Double - length
+     * @return  - Double - length in mm
      */
     @Override
     public Double calculate(Object vars) {
