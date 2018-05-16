@@ -32,7 +32,7 @@ public class SettlerStage extends AbstractLHS {
         //Static fields    
             //  Static fields new to this class
     /* flag to do debug operations */
-    public static boolean debugOps = false;
+    public static boolean debugOps = true;
     /** flag to print debugging info */
     public static boolean debug = false;
     /* Class for attributes */
@@ -458,12 +458,16 @@ public class SettlerStage extends AbstractLHS {
         List<LifeStageInterface> nLHSs = null;
         //if total depth is appropriate for settlement and 
         //indiv is near the bottom, then settle and transform to next stage.
-        if (debugOps) logger.info("minDepth,totDepth,maxDepth,depth = "+minSettlementDepth+","+totalDepth+","+maxSettlementDepth+","+depth);
+        if (debugOps) {
+            logger.info("--starting getMetamorphosedIndividuals(dt)");
+            logger.info("minDepth,totDepth,maxDepth,depth = "+minSettlementDepth+","+totalDepth+","+maxSettlementDepth+","+depth);
+        }
         if ((minSettlementDepth<=totalDepth)&&(totalDepth<=maxSettlementDepth)&&
                 (depth>(totalDepth-5))) {
             nLHSs = createMetamorphosedIndividuals();
             if (nLHSs!=null) output.addAll(nLHSs);
         }
+        if (debugOps) logger.info("--finished getMetamorphosedIndividuals(dt)");
         return output;
     }
 
@@ -586,9 +590,15 @@ public class SettlerStage extends AbstractLHS {
     
     @Override
     public void step(double dt) throws ArrayIndexOutOfBoundsException {
+        if (debugOps) logger.info("--starting step(dt)");
         double[] pos = lp.getIJK();
         double[] uvw = calcUVW(pos,dt);//this also sets "attached" and may change pos[2] to 0
+        if (debugOps) {
+            logger.info("id = "+id+": uvw = "+uvw[0]+cc+uvw[1]+cc+uvw[2]);
+            logger.info("id = "+id+": pos = "+pos[0]+cc+pos[1]+cc+pos[2]);
+        }
         if (attached){
+            //don't move
             lp.setIJK(pos[0], pos[1], pos[2]);
         } else {
             //do lagrangian particle tracking
@@ -624,6 +634,7 @@ public class SettlerStage extends AbstractLHS {
             logger.info("Indiv "+id+" exited grid at ["+pos[0]+","+pos[1]+"]: "+gridCellID);
         }
         updateAttributes(); //update the attributes object w/ nmodified values
+        if (debugOps) logger.info("--finished step(dt)");
     }
     
     /**
@@ -698,7 +709,7 @@ public class SettlerStage extends AbstractLHS {
                 double r = Math.sqrt(horizRWP/Math.abs(dt));
                 uv[0] += r*rng.computeNormalVariate(); //stochastic swimming rate
                 uv[1] += r*rng.computeNormalVariate(); //stochastic swimming rate
-                if (debugOps) logger.info("id: "+id+"; r, uv: "+r+", {"+uv[0]+", "+uv[1]+"}\n");
+                if (debugOps) logger.info("--in calcUVW: "+"id: "+id+"; r, uv: "+r+", {"+uv[0]+", "+uv[1]+"}\n");
             }
         }
         
@@ -724,6 +735,7 @@ public class SettlerStage extends AbstractLHS {
      * @param dt - time step in seconds
      */
     private void updateSize(double dt) {
+        if (debugOps) logger.info("--starting updateSize(dt)");
         if (fcnGrowth instanceof GrowthByConsumptionFunction){
             /**
             * Compute time of local sunrise, sunset and solar noon (in minutes, UTC) 
@@ -748,10 +760,12 @@ public class SettlerStage extends AbstractLHS {
              * @return     - the function value (z[dt]) as a Double 
              */
             double[] res = (double[])fcnGrowth.calculate(new double[]{weight,temperature,isLight});
-            logger.info("--updateSize: rtGrw = "+res[0]+"; dt = "+dt/DAY_SECS+"; isLight = "+isLight);
             double w0 = weight;
             weight = weight + res[0]*dt/DAY_SECS;//dt is in sec, res[0] is growth in micrograms/day
-            logger.info("--w0 = "+w0+"; dw = "+res[0]*dt/DAY_SECS+"; wt = "+weight);
+            if (debugOps){
+                logger.info("rtGrw = "+res[0]+"; dt = "+dt/DAY_SECS+       "; isLight = "+isLight);
+                logger.info("w0    = "+w0+    "; dw = "+res[0]*dt/DAY_SECS+"; wt      = "+weight);
+            }
             if (fcnLatW instanceof LengthAtWeightFunction){
                 double newsize = (Double)fcnLatW.calculate(new double[]{weight});
                 if (newsize > size) size = newsize; //size cannot decrease 
@@ -774,6 +788,7 @@ public class SettlerStage extends AbstractLHS {
             double rate = (Double)fcnGrowth.calculate(null);
             size += rate*dt/DAY_SECS;
         }
+        if (debugOps) logger.info("--finished updateSize(dt)");
     }
 
     /**

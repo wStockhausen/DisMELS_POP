@@ -143,7 +143,7 @@ public class GrowthByConsumptionFunction extends AbstractIBMFunction implements 
     public static final String PARAM_SDAE = "pSDAE";
     
     /** flag to print debugging info */
-    public static boolean debug = true;
+    public static boolean debug = false;
     /** logger for class */
     private static final Logger logger = Logger.getLogger(GrowthByConsumptionFunction.class.getName());
     
@@ -287,6 +287,7 @@ public class GrowthByConsumptionFunction extends AbstractIBMFunction implements 
      */
     @Override
     public double[] calculate(Object vars) {
+        if (debug) logger.info("--starting calculate(vars)");
         double[] lvars = (double[]) vars;//cast object to required double[]
         int i = 0;
         double wgt = lvars[i++]; //individual weight
@@ -303,12 +304,13 @@ public class GrowthByConsumptionFunction extends AbstractIBMFunction implements 
         double rtTC   = (1-lgt)*metRst + lgt*metAct + pSDAE*rtCons;      //rate of total metabolic costs [pSDAE = SDA + E]
         double rtGrw  = (rtCons * AE) - rtTC;                            //growth rate in micrograms/day
         if (debug){
-            logger.info("\n--W: "+wgt+"; T: "+tmp+"; L: "+lgt); 
-            logger.info("--pCexp     : "+pCexp   +";pLnQ10     : "+pLnQ10    +"; pT0   : "+pT0+"; rnd: "+rnd*stdvCons+"; rtCons: "+rtCons);
-            logger.info("--pMaxAE    : "+pMaxAE    +"; pB        : "+pT0       +", AE    : "+AE);
-            logger.info("--pMetRstNum: "+pMetRstNum+"; pMetRstDen: "+pMetRstDen+", metRst: "+metRst);
-            logger.info("--pActMult  : "+pActMult  +"; light     : "+lgt       +", metAct: "+metAct);
-            logger.info("--pSDAE     : "+pSDAE     +"; rtTC      : "+rtTC      +"; rtGrw : "+rtGrw);
+            logger.info("----W         : "+wgt+"; T: "+tmp+"; L: "+lgt); 
+            logger.info("----pCexp     : "+pCexp   +";pLnQ10     : "+pLnQ10    +"; pT0   : "+pT0+"; rnd: "+rnd*stdvCons+"; rtCons: "+rtCons);
+            logger.info("----pMaxAE    : "+pMaxAE    +"; pB        : "+pT0       +", AE    : "+AE);
+            logger.info("----pMetRstNum: "+pMetRstNum+"; pMetRstDen: "+pMetRstDen+", metRst: "+metRst);
+            logger.info("----pActMult  : "+pActMult  +"; light     : "+lgt       +", metAct: "+metAct);
+            logger.info("----pSDAE     : "+pSDAE     +"; rtTC      : "+rtTC      +"; rtGrw : "+rtGrw);
+            logger.info("----finished calculate(vars)");
         }
         double[] res = new double[]{rtGrw,rtCons,AE,metRst,metAct,rtTC};
         return res;

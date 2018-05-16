@@ -73,6 +73,8 @@ public class LarvaStage extends AbstractLHS {
     protected double minSize;
     /** initial size (mm) */
     protected double initialSize;
+    /** minimum weight before metamorphosis to next stage */
+    protected double minWeight;
     /** initial weight (g) */
     protected double initialWeight;
     /** flag to use stochastic transitions */
@@ -432,6 +434,8 @@ public class LarvaStage extends AbstractLHS {
                 params.getValue(LarvaStageParameters.PARAM_maxStageDuration,maxStageDuration);
         minSize = 
                 params.getValue(LarvaStageParameters.PARAM_minSize,minSize);
+        minWeight = 
+                params.getValue(LarvaStageParameters.PARAM_minWeight,minWeight);
         randomizeTransitions = 
                 params.getValue(LarvaStageParameters.PARAM_randomizeTransitions,randomizeTransitions);
         recalcIOGV = 
@@ -470,7 +474,7 @@ public class LarvaStage extends AbstractLHS {
         double dtp = 0.25*(dt/DAY_SECS);//use 1/4 timestep (converted from sec to d)
         output.clear();
         List<LifeStageInterface> nLHSs;
-        if (((ageInStage+dtp)>=minStageDuration)&&(size>=minSize)) {
+        if (((ageInStage+dtp)>=minStageDuration)&&(size>=minSize)&&(weight>=minWeight)) {
             if ((numTrans>0)||!isSuperIndividual){
                 nLHSs = createMetamorphosedIndividuals();
                 if (nLHSs!=null) output.addAll(nLHSs);

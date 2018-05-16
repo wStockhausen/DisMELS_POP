@@ -81,7 +81,7 @@ public class LengthAtWeightFunction extends AbstractIBMFunction implements IBMGr
     public static final String PARAM_Beta = "pBeta";
     
     /** flag to print debugging info */
-    public static boolean debug = true;
+    public static boolean debug = false;
     /** logger for class */
     private static final Logger logger = Logger.getLogger(LengthAtWeightFunction.class.getName());
     
@@ -146,12 +146,14 @@ public class LengthAtWeightFunction extends AbstractIBMFunction implements IBMGr
      */
     @Override
     public Double calculate(Object vars) {
+        if (debug) logger.info("--starting calculate(vars)");
         double[] lvars = (double[]) vars;//cast object to required double[]
         int i = 0;
         double wgt = lvars[i++]; //individual weight
         double len  = Math.pow(wgt/pAlpha, 1.0/pBeta); //length
         if (debug){
-            logger.info("\n--W: "+wgt+"; pAlpha: "+pAlpha   +"; pBeta : "+pBeta    +"; L : "+len);
+            logger.info("----W: "+wgt+"; pAlpha: "+pAlpha   +"; pBeta : "+pBeta    +"; L : "+len);
+            logger.info("--finished calculate(vars)");
         }
         return len;
     }
