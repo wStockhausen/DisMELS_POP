@@ -24,7 +24,7 @@ import wts.models.DisMELS.framework.IBMFunctions.IBMGrowthFunctionInterface;
  *  <li> pLnQ10 - Double - ln-scale Q10 value
  *  <li> pOnT   - flag (0/1) to include temperature effects
  *  <li> pT0    - Double - nominal temperature to use
- *  <li> sigOGV - Double  - std. deviation in random component for consumption
+ *  <li> stdvCons - Double  - std. deviation in random component for consumption
  *  <li> pMaxAE - Double  - max  assimilation efficiency
  *  <li> pB     - Double - coefficient in exponent for max assimilation efficiency
  *  <li> pSDAE      - Double - assumed constant for SDA+E
@@ -81,7 +81,7 @@ public class GrowthByConsumptionFunction extends AbstractIBMFunction implements 
             "\n\t*  pLnQ10 - Double - ln-scale Q10 value"+
             "\n\t*  pOnT   - flag (0/1) to include temperature effects"+
             "\n\t*  pT0    - Double - nominal temperature to use"+
-            "\n\t*  sigOGV - Double  - std. deviation in random component for consumption"+
+            "\n\t*  stdvCons - Double  - std. deviation in random component for consumption"+
             "\n\t*  pMaxAE - Double  - max  assimilation efficiency"+
             "\n\t*  pB     - Double - coefficient in exponent for max assimilation efficiency"+
             "\n\t*  pSDAE      - Double - assumed constant for SDA+E"+
