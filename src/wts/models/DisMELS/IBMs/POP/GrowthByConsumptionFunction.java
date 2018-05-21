@@ -41,8 +41,15 @@ import wts.models.DisMELS.framework.IBMFunctions.IBMGrowthFunctionInterface;
  *    <li> L - flag (0/1) indicating daylight (=1) or night (=0)
  *  </ul>
  * </ul>
- * Value:
- * <ul><li>G - Double -  daily growth rate in micrograms/day</ul>
+ * Value: double[] with the elements
+ * <ul>
+ *      <li> G - the daily growth rate, in micrograms/day 
+ *      <li> C - the consumption rate, in micrograms/day 
+ *      <li> AE - the assimilation efficiency 
+ *      <li> metRst - the resting metabolism rate, in micrograms/day 
+ *      <li> metAct - the active metabolism rate, in micrograms/day
+ *      <li> TC - the rate of total metabolic costs, in micrograms/day 
+ * </ul>
  * Calculation:
  * <ul>
  *  <li>  if (stdvCons>0) rnd = rng.computeNormalVariate(); //random number
@@ -93,8 +100,15 @@ public class GrowthByConsumptionFunction extends AbstractIBMFunction implements 
             "\n\t*          W - double - weight (micrograms)"+
             "\n\t*          T - double - temperature (deg C)"+
             "\n\t*          L - double - flag (0/1) indicating daytime (1) or nighttime (0)"+
-            "\n\t* Value:"+
-            "\n\t*      ogv - Double - initial oil globule volume"+
+            "\n\t* Value: double[] with the elements"+
+            "\n\t*  <ul>"+
+            "\n\t*       <li> G - the daily growth rate, in micrograms/day "+
+            "\n\t*       <li> C - the consumption rate, in micrograms/day "+
+            "\n\t*       <li> AE - the assimilation efficiency "+
+            "\n\t*       <li> metRst - the resting metabolism rate, in micrograms/day "+
+            "\n\t*       <li> metAct - the active metabolism rate, in micrograms/day"+
+            "\n\t*       <li> TC - the rate of total metabolic costs, in micrograms/day "+
+            "\n\t*  </ul>"+
             "\n\t* Calculation:"+
             "\n\t*   if (stdvCons>0) rnd = rng.computeNormalVariate(); //random number"+
             "\n\t*   C = 10.0^[pCexp*log10(W)-0.27];                 //consumption rate, without temperature dependence"+
